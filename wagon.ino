@@ -5,12 +5,13 @@ void initialize_wagon(){
      wagonSwitchPinValue = digitalRead(wagonSwitchPin);
      AccelWagonstepper.setMaxSpeed(1000);
      AccelWagonstepper.setSpeed(-50); 
-     AccelWagonstepper.runSpeed();
+     AccelWagonstepper.runSpeed(); 
 }
    wagonSwitchPressed();
    WagonHomePosition = AccelWagonstepper.currentPosition();
-     shovel_servo.attach(11);
+   shovel_servo.attach(11);
    shovel_servo.write(0);
+   delay(500);
    shovel_servo.detach();
    Serial.println(WagonHomePosition);
    Serial.println("Wagon initialized");
@@ -32,11 +33,11 @@ void displace_wagon(int tea_index){
     
   }
   else if (tea_index==4){
-    WagonDestination = WagonHomePosition + 350;
+    WagonDestination = WagonHomePosition + 290;
     
   }
   else {
-    WagonDestination = WagonHomePosition + 20 + (tea_index - 1) * 320;
+    WagonDestination = WagonHomePosition + 20 + (tea_index - 1) * 355;
   }
   AccelWagonstepper.moveTo(WagonDestination);
   Serial.println(WagonHomePosition);
