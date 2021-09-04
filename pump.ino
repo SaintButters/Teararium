@@ -42,7 +42,7 @@ void close_valve(){
 
 void run_pump() {
   AFMS3.begin();  // create with the default frequency 1.6KHz
-  PumpMotor->setSpeed(250);
+  PumpMotor->setSpeed(125);
   PumpMotor->run(FORWARD);
   PumpMotorState = 1;
 }

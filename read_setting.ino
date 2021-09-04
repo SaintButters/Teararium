@@ -27,7 +27,6 @@ int read_setting(int setting_index){
 
 setting_value = 0;
 line_counter = 0;
-//Serial.begin(9600);
 while (!Serial) {
 ; // wait for serial port to connect. Needed for native USB port only
 }
@@ -63,7 +62,7 @@ return setting_value;
 
 
 int get_setting(int menuItem, int  teaItem, int soundItem, int lightingItem) {
-//  Serial.begin(9600);
+
   Serial.println("menuItem " + menuItem);
   Serial.println("teaItem " + teaItem);
   Serial.println("soundItem " + soundItem);
@@ -103,12 +102,11 @@ int get_setting(int menuItem, int  teaItem, int soundItem, int lightingItem) {
 }
 
 int get_setting_line(int menuItem, int  teaItem, int soundItem, int lightingItem) {
-//  Serial.begin(9600);
+
   Serial.println(" menuItem " + menuItem);
   Serial.println(" teaItem " + teaItem);
   Serial.println(" soundItem " + soundItem);
   Serial.println(" lightingItem " + lightingItem);
-  line = "";
   if (menuItem==1 and teaItem==1){
     line = tea1_temp_line;
   }

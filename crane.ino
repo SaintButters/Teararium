@@ -1,7 +1,6 @@
 void initialize_crane(){
   Serial.println("Intializing crane");
    craneSwitchPinValue = digitalRead(craneSwitchPin);
-   Serial.println("coco");
    while (craneSwitchPinValue != HIGH){
      craneSwitchPinValue = digitalRead(craneSwitchPin);
      AccelCranestepper.setMaxSpeed(1000);

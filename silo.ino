@@ -13,7 +13,7 @@ void run_motor1() {
 //  delay(3000);
 //  myMotor->setSpeed(0);
 //  delay(1000);
-  SiloMotor1->setSpeed(250);
+  SiloMotor1->setSpeed(75);
   SiloMotor1->run(BACKWARD);
   delay(3000);
   SiloMotor1->run(FORWARD);

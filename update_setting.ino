@@ -9,7 +9,6 @@ int value_line;
 
 void save_setting(int data_line, int data_value){
 
-//Serial.begin(9600);
 while (!Serial) {
 ; // wait for serial port to connect. Needed for native USB port only
 }

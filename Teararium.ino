@@ -47,12 +47,18 @@ Adafruit_StepperMotor *wagonStepper = AFMS.getStepper(200, 1);
 Adafruit_DCMotor *SiloMotor1 = AFMS2.getMotor(1);
 Adafruit_DCMotor *CraneMotor = AFMS2.getMotor(2);
 Adafruit_DCMotor *PumpMotor = AFMS3.getMotor(1);
+Adafruit_DCMotor *StirrerMotor = AFMS3.getMotor(2);
+
 
 int PumpMotorState = 0;
+int StirrerMotorState = 0;
 //INIT CAPTEUR TEMPERATURE
-int thermoDO = 38;
-int thermoCS = 36;
-int thermoCLK = 34;
+//int thermoDO = 38;
+//int thermoCS = 36;
+//int thermoCLK = 34;
+int thermoDO = 26;
+int thermoCS = 24;
+int thermoCLK = 22;
 int desired_temp = 20;
 MAX6675 thermocouple(thermoCLK, thermoCS, thermoDO);
 //INIT RELAI
@@ -63,7 +69,7 @@ int solenoidRelayPin = 47;
 volatile int flow_frequency; // Measures flow sensor pulses
 unsigned int L_per_hour; // Computed litres/hour
 unsigned int mL_per_sec; // Computed mL/sec
-unsigned char flowsensor = 33;
+unsigned char flowsensor = 18; //pin 18 is an interruptable pin, raises event to interrupt(5) : cf doc interrupt Arduino Mega 2560
 int desired_volume; //mL
 float pouring_time;
 float volume_poured;
@@ -115,7 +121,7 @@ void setup() {
     //SETUP FLOW SENSOR
   pinMode(flowsensor, INPUT);
   digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
-  attachInterrupt(0, flow, RISING); // Setup Interrupt
+  attachInterrupt(5, flow, RISING); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
   sei(); // Enable interrupts
   currentTime = millis();
   cloopTime = currentTime;
@@ -137,28 +143,32 @@ void loop() {
 
 void initialize_teararium(){
 
-//    prepare_tea(1);
+    prepare_tea(1);
 //  arm_smooth_down(arm_up_angle, arm_down_angle);
 
-  pull_teaball_up();
-  delay(2500);
+//    close_teaball();
+
+//  pour_water(150);
+//  initialize_crane();
+//  initialize_wagon();
+////  initialize_arm();
+//  displace_wagon(3);
+////  delay(1000);
+//  run_motor1();
+//  displace_wagon(4);
+//  activate_shovel();
+//  displace_wagon(0);
+//  pull_teaball_up();
+//  delay(2500);
 //  pull_teaball_down();
 //  delay(1500);
 //  open_teaball();
 //  delay(3000);
 //  close_teaball();
-//  pour_water(150);
-//  initialize_crane();
-//  initialize_wagon();
-//  initialize_arm();
-//  displace_wagon(3);
-//  delay(1000);
-//  run_motor1();
-//  displace_wagon(4);
-//  activate_shovel();
-//  displace_wagon(0);
-
+//    stir();
+//    stop_stirring();
   //  arm_smooth_up(arm_down_angle, arm_up_angle);
+//  prepare_tea(1);
 
 
 }

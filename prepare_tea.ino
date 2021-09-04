@@ -5,7 +5,14 @@ void prepare_tea(int tea_index){
   
 //  displace_wagon(tea_index);
 //  displace_wagon(0);
-  while (thermocouple.readCelsius() < 200) {
-    displayTemperature(String(thermocouple.readCelsius(),1));
+ Serial.println("couc");
+ Serial.println(thermocouple.readCelsius());
+  Serial.println("coucou");
+//  while (thermocouple.readCelsius() < 110) {
+  while (tea_index < 110) {
+
+//    displayTemperature(String(thermocouple.readCelsius(),1));
+     Serial.println(thermocouple.readCelsius());
+     delay(500);
   }
 }
