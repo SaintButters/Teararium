@@ -1,21 +1,23 @@
 void initialize_crane(){
   Serial.println("Intializing crane");
+   close_teaball();
+   pull_teaball_up();
    craneSwitchPinValue = digitalRead(craneSwitchPin);
    while (craneSwitchPinValue != HIGH){
      craneSwitchPinValue = digitalRead(craneSwitchPin);
      AccelCranestepper.setMaxSpeed(1000);
-     AccelCranestepper.setSpeed(50); 
+     AccelCranestepper.setSpeed(200); 
      AccelCranestepper.runSpeed();
     }
    craneSwitchPressed();
+   CraneHomePosition = AccelCranestepper.currentPosition();
    Serial.println("Crane initialized");
 }
 
 
-
 void craneSwitchPressed(){
   Serial.println("Stop rotating the crane !!!");
-  if (digitalRead(craneSwitchPin) == HIGH){
+  if (digitalRead(craneSwitchPinValue) == HIGH){
   craneStepper->release();
   }
 } 
@@ -40,7 +42,8 @@ void close_teaball(){
  }
 
 void pull_teaball_up(){
-    Serial.println("Pulling teaball up");
+  Serial.println("Pulling teaball up");
+  TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
   AFMS2.begin();  // create with the default frequency 1.6KHz
   CraneMotor->setSpeed(50);
   while (TeaBallUpSwitchValue !=HIGH){
@@ -52,6 +55,7 @@ void pull_teaball_up(){
 
 void pull_teaball_down(){
   Serial.println("Pulling teaball down");
+  TeaBallDownSwitchValue = digitalRead(TeaBallDownSwitchPin);
   AFMS2.begin();  // create with the default frequency 1.6KHz
   CraneMotor->setSpeed(50);
   while (TeaBallDownSwitchValue !=HIGH){
@@ -60,3 +64,36 @@ void pull_teaball_down(){
   }
   CraneMotor->setSpeed(0);
   }
+
+void immerge_teaball(){
+  Serial.println("Immerging teaball");
+  AFMS2.begin();  // create with the default frequency 1.6KHz
+  CraneMotor->setSpeed(50);
+  CraneMotor->run(BACKWARD);
+  delay(up_to_down_time/2);
+  CraneMotor->setSpeed(0);
+  }
+
+ void rotate_crane(int step_index){
+  AFMS2.begin();
+  AccelCranestepper.setMaxSpeed(200);
+  AccelCranestepper.setAcceleration(30);
+  if (step_index==0){
+    CraneDestination = CraneHomePosition;
+    
+  }
+  else if (step_index==1){
+       Serial.println("yoo");
+    CraneDestination = CraneHomePosition - 450;
+  }
+  else{
+    CraneDestination = CraneHomePosition  - 780;
+  }
+  AccelCranestepper.moveTo(CraneDestination);  
+  while (AccelCranestepper.currentPosition() != CraneDestination) {
+//   Serial.println("running crane motor");
+   AccelCranestepper.runToNewPosition(CraneDestination);
+//   Serial.println(AccelCranestepper.currentPosition());
+  }
+   craneStepper->release();
+}

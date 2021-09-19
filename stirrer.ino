@@ -9,9 +9,9 @@ void stir() {
 //  run_pump();
 //  StirrerMotor->setSpeed(100);
   StirrerMotor->run(FORWARD);
-  SiloMotor1->setSpeed(125);
-  SiloMotor1->run(BACKWARD);
-  SiloMotor1->setSpeed(0);
+  Silo1Motor->setSpeed(125);
+  Silo1Motor->run(BACKWARD);
+  Silo1Motor->setSpeed(0);
   for (int i = 70; i <= 150; i++) {
     Serial.println(i);
     StirrerMotor->setSpeed(i);
