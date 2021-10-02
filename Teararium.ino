@@ -31,10 +31,37 @@ int closed_teaball_angle = 160;
 int open_teaball_angle = 0;
 int pos=0;
 ///INIT STEPPER///
-// Create the motor shield object with the default I2C address
-Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x60); 
+#include <TMCStepper.h>
+
+#define EN_PIN_craneStepper           38 // Enable
+#define DIR_PIN_craneStepper         58 // Direction
+#define STEP_PIN_craneStepper         57 // Step
+#define SERIAL_PORT_craneStepper Serial1 // TMC2208/TMC2224 HardwareSerial port
+
+#define EN_PIN_wagonStepper           40 // Enable
+#define DIR_PIN_wagonStepper         60 // Direction
+#define STEP_PIN_wagonStepper         59 // Step
+#define SERIAL_PORT_wagonStepper Serial1 // TMC2208/TMC2224 HardwareSerial port
+
+#define R_SENSE 0.11f // Match to your driver
+                     // SilentStepStick series use 0.11
+                     // UltiMachine Einsy and Archim2 boards use 0.2
+                     // Panucatt BSD2660 uses 0.1
+                     // Watterott TMC5160 uses 0.075
+
+TMC2208Stepper craneDriver = TMC2208Stepper(&SERIAL_PORT_craneStepper, R_SENSE); // Hardware Serial0
+TMC2208Stepper wagonDriver = TMC2208Stepper(&SERIAL_PORT_wagonStepper, R_SENSE); // Hardware Serial0
+
+constexpr uint32_t steps_per_mm = 80;
+
+#include <AccelStepper.h>
+AccelStepper craneStepper = AccelStepper(craneStepper.DRIVER, STEP_PIN_craneStepper, DIR_PIN_craneStepper);
+AccelStepper wagonStepper = AccelStepper(wagonStepper.DRIVER, STEP_PIN_wagonStepper, DIR_PIN_wagonStepper);
+
+// Create the motor shield object with its I2C address
+//Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x60); 
 Adafruit_MotorShield AFMS2 = Adafruit_MotorShield(0x61); 
-Adafruit_MotorShield AFMS3 = Adafruit_MotorShield(0x63); 
+Adafruit_MotorShield AFMS3 = Adafruit_MotorShield(0x60); 
 
 ///INIT SERVOS///
 Servo shovel_servo;  
@@ -48,8 +75,6 @@ HX711_ADC LoadCell(42, 44); //  pin 42 et 44 digital PWM
 
 // Connect a stepper motor with 200 steps per revolution (1.8 degree)
 // to motor port #2 (M3 and M4)
-Adafruit_StepperMotor *craneStepper = AFMS.getStepper(200, 2);
-Adafruit_StepperMotor *wagonStepper = AFMS.getStepper(200, 1);
 Adafruit_DCMotor *Silo3Motor = AFMS2.getMotor(1);
 Adafruit_DCMotor *Silo2Motor = AFMS2.getMotor(3);
 Adafruit_DCMotor *Silo1Motor = AFMS2.getMotor(4);
@@ -89,23 +114,6 @@ unsigned long currentTime;
 unsigned long cloopTime;
 //Crane inputs
 float up_to_down_time;
-void craneForwardStep() {  
-  craneStepper->onestep(FORWARD, MICROSTEP);
-}
-void craneBackwardStep() {  
-  craneStepper->onestep(BACKWARD, MICROSTEP);
-}
-
-void wagonForwardStep() {  
-  wagonStepper->onestep(FORWARD, MICROSTEP);
-}
-void wagonBackwardStep() {  
-  wagonStepper->onestep(BACKWARD, MICROSTEP);
-}
-
-AccelStepper AccelCranestepper(craneForwardStep, craneBackwardStep); // use functions to step
-AccelStepper AccelWagonstepper(wagonForwardStep, wagonBackwardStep); // use functions to step
-
 
 
 void setup() {
@@ -122,7 +130,7 @@ void setup() {
   pinMode(TeaBallUpSwitchPin, INPUT);
   ///Crane setup///
   Serial.println("Initializing motor Feather 1");
-  AFMS.begin(1600);
+//  AFMS.begin(1600);
   Serial.println("motor Feather 1 initialized");
   ///Servos setup///
   //SETUP RELAY
@@ -135,7 +143,7 @@ void setup() {
   //SETUP SCALE
   LoadCell.begin(); // start connection to HX711
   LoadCell.start(2000); // load cells gets 2000ms of time to stabilize
-  LoadCell.setCalFactor(1900); // à calibrer !
+  LoadCell.setCalFactor(-6000); // à calibrer !
   //SETUP FLOW SENSOR
   pinMode(flowsensor, INPUT);
   digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
@@ -143,6 +151,7 @@ void setup() {
   sei(); // Enable interrupts
   currentTime = millis();
   cloopTime = currentTime;
+  initialize_steppers();
   initialize_teararium();
 }
 
@@ -164,47 +173,60 @@ void initialize_teararium(){
 
 //    heat_thermoblock();
 //    prepare_tea(1);
-//  arm_smooth_down(arm_up_angle, arm_down_angle);
+//  arm_smooth_up();
+//  delay(3000);
+//  arm_smooth_down();
+//    delay(5000);
+//  arm_smooth_up();
+//  delay(3000);
 //    compute_weight();
    
 //    close_teaball();
-
 //  pour_water(150);
+
+
   initialize_crane();
-  initialize_wagon();
- 
-//    
-  displace_wagon(3);
+//  initialize_wagon();
+//  initialize_arm();
+//  displace_wagon(3);
+
+  
 //  unload_tea(3);
-  displace_wagon(1);
+
+//  displace_wagon(4);
   rotate_crane(2);
   delay(2000);
-  unsigned long StartTime = millis();
-  pull_teaball_down();
-  unsigned long CurrentTime = millis();
-  up_to_down_time = CurrentTime - StartTime;
-  Serial.print("Temps de descente : ");
-  Serial.println(up_to_down_time);
-  delay(1000);
-  open_teaball();
-  displace_wagon(4);
-  activate_shovel();
-  delay(2000);
-  displace_wagon(0);
-  close_teaball();
-  pull_teaball_up();
-  delay(2000);
   rotate_crane(1);
-  immerge_teaball();
-  delay(2000);
+//  delay(2000);
+//  unsigned long StartTime = millis();
+//  pull_teaball_down();
+//  unsigned long CurrentTime = millis();
+//  up_to_down_time = CurrentTime - StartTime;
+//  Serial.print("Temps de descente : ");
+//  Serial.println(up_to_down_time);
+//  delay(1000);
+//  open_teaball();
+//  displace_wagon(4);
+//  activate_shovel();
+//  delay(2000);
+//  displace_wagon(0);
+//  close_teaball();
+//  pull_teaball_up();
+//  delay(2000);
+//  rotate_crane(1);
+//  immerge_teaball();
+//  delay(2000);
+//  pull_teaball_up();
+//  rotate_crane(0);
+//  pull_teaball_down();
+//  delay(1000);
+//  open_teaball();
+//  delay(3000);
+//  close_teaball();
   pull_teaball_up();
-  rotate_crane(0);
-  pull_teaball_down();
-  delay(1000);
-  open_teaball();
-  delay(3000);
-  close_teaball();
-  pull_teaball_up();
+
+
+
 
   
 ////  initialize_arm();
@@ -223,7 +245,7 @@ void initialize_teararium(){
 //  close_teaball();
 //    stir();
 //    stop_stirring();
-  //  arm_smooth_up(arm_down_angle, arm_up_angle);
+  //  arm_smooth_up();
 //  prepare_tea(1);
 
 

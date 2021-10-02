@@ -22,7 +22,7 @@ void run_motor(int tea_index, int timer_index) {
   
   if(tea_index == 1){
     Silo1Motor->setSpeed(motor_speed);
-    if (timer_index <= 2000){
+    if (timer_index <= 1750){
     Silo1Motor->run(BACKWARD);
     }
     else {
@@ -31,7 +31,7 @@ void run_motor(int tea_index, int timer_index) {
   }
   else if (tea_index == 2){
     Silo2Motor->setSpeed(motor_speed);
-     if (timer_index <= 2000){
+     if (timer_index <= 1750){
     Silo2Motor->run(BACKWARD);
     }
     else {
@@ -40,7 +40,7 @@ void run_motor(int tea_index, int timer_index) {
   }
   else if (tea_index == 3){
     Silo3Motor->setSpeed(motor_speed);
-    if (timer_index <= 2000){
+    if (timer_index <= 1750){
       Silo3Motor->run(BACKWARD);
     }
     else {

@@ -27,7 +27,7 @@ void displayWeight(String weight)
     display.setTextSize(1);
     display.setCursor(5, 25);
     display.print(weight);
-    display.print(" G");
+    display.print(" grams");
     display.setTextSize(2);
     display.display();
 }

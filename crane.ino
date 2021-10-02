@@ -1,16 +1,18 @@
 void initialize_crane(){
   Serial.println("Intializing crane");
-   close_teaball();
+   teaball_servo.write(closed_teaball_angle);
+   init_closed_teaball();
    pull_teaball_up();
+   Serial.println("Rotating crane to home");
    craneSwitchPinValue = digitalRead(craneSwitchPin);
+   craneStepper.enableOutputs();
    while (craneSwitchPinValue != HIGH){
      craneSwitchPinValue = digitalRead(craneSwitchPin);
-     AccelCranestepper.setMaxSpeed(1000);
-     AccelCranestepper.setSpeed(200); 
-     AccelCranestepper.runSpeed();
+     craneStepper.setSpeed(100);
+     craneStepper.runSpeed();
     }
    craneSwitchPressed();
-   CraneHomePosition = AccelCranestepper.currentPosition();
+   CraneHomePosition = craneStepper.currentPosition();
    Serial.println("Crane initialized");
 }
 
@@ -18,10 +20,15 @@ void initialize_crane(){
 void craneSwitchPressed(){
   Serial.println("Stop rotating the crane !!!");
   if (digitalRead(craneSwitchPinValue) == HIGH){
-  craneStepper->release();
+    craneStepper.disableOutputs();
   }
 } 
-
+ void init_closed_teaball(){
+  teaball_servo.write(closed_teaball_angle);
+  teaball_servo.attach(12);
+  delay(500);
+  teaball_servo.detach();
+ }
 void open_teaball(){
   teaball_servo.attach(12);
   for (pos = closed_teaball_angle; pos >= open_teaball_angle; pos -=1) {
@@ -75,25 +82,21 @@ void immerge_teaball(){
   }
 
  void rotate_crane(int step_index){
-  AFMS2.begin();
-  AccelCranestepper.setMaxSpeed(200);
-  AccelCranestepper.setAcceleration(30);
   if (step_index==0){
     CraneDestination = CraneHomePosition;
     
   }
   else if (step_index==1){
-       Serial.println("yoo");
-    CraneDestination = CraneHomePosition - 450;
+    CraneDestination = CraneHomePosition - 165;
+
   }
   else{
-    CraneDestination = CraneHomePosition  - 780;
+        CraneDestination = CraneHomePosition  - 325;
+
   }
-  AccelCranestepper.moveTo(CraneDestination);  
-  while (AccelCranestepper.currentPosition() != CraneDestination) {
-//   Serial.println("running crane motor");
-   AccelCranestepper.runToNewPosition(CraneDestination);
-//   Serial.println(AccelCranestepper.currentPosition());
-  }
-   craneStepper->release();
+  craneStepper.enableOutputs();
+    while (craneStepper.currentPosition() != CraneDestination) {
+        craneStepper.runToNewPosition(CraneDestination);
+    }
+  craneStepper.disableOutputs();
 }

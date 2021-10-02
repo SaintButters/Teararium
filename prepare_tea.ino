@@ -20,7 +20,7 @@ void unload_tea(int tea_index){
   while (tea_weight < desired_tea_weight) {
     run_motor(tea_index, timer_index);
     tea_weight = compute_weight();
-    delay(500);
+    delay(250);
     timer_index = timer_index + 500;
     if (timer_index == 3500)
       {timer_index = 0;}
