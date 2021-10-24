@@ -1,24 +1,25 @@
- int preheat_temp = 75;
+ int preheat_temp = 95;
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
  
  void heat_thermoblock(){
-   while (thermocouple1.readCelsius() < preheat_temp) {
-       turn_thermoblock_on();
-       displayTemperature(String(thermocouple1.readCelsius(),1));
-       Serial.print("temp = ");
-       Serial.print(thermocouple1.readCelsius());
-       Serial.println(" degC");
-       delay(500);
-    }
+   
+    while (computed_temperature() < preheat_temp) {
+      turn_thermoblock_on();
+      displayTemperature(String(computed_temperature(),1));
+      Serial.print("temp = ");
+      Serial.print(String(computed_temperature()));
+      Serial.println(" degC");
+      delay(500);
+  }
     turn_thermoblock_off();
-    while (preheat_temp < 100000) {
-       displayTemperature(String(thermocouple1.readCelsius(),1));
-       Serial.print("temp = ");
-       Serial.print(thermocouple1.readCelsius());
-       Serial.println(" degC");
-       delay(500);
-    }
+//    while (computed_temperature() < 100000) {
+//      displayTemperature(String(computed_temperature(),1));
+//      Serial.print("temp = ");
+//      Serial.print(String(computed_temperature()));
+//      Serial.println(" degC");
+//      delay(500);
+//    }
  }
   
   void turn_thermoblock_on(){

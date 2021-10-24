@@ -1,5 +1,9 @@
 void initialize_wagon(){
   Serial.println("Starting Wagon initialization");
+  shovel_servo.write(0);
+  shovel_servo.attach(11);
+  delay(500);
+  shovel_servo.detach();
   wagonSwitchPinValue = digitalRead(wagonSwitchPin);
   wagonStepper.enableOutputs();
    while (wagonSwitchPinValue != HIGH){
@@ -9,10 +13,8 @@ void initialize_wagon(){
   }
    wagonSwitchPressed();
    WagonHomePosition = wagonStepper.currentPosition();
-   shovel_servo.attach(11);
-   shovel_servo.write(0);
-   delay(500);
-   shovel_servo.detach();
+   
+   
    Serial.println(WagonHomePosition);
    Serial.println("Wagon initialized");
 }
@@ -47,15 +49,4 @@ void displace_wagon(int tea_index){
   }
   wagonStepper.disableOutputs();
 
-}
-
-float compute_weight() {
-
-    float weight;
-    LoadCell.update(); // retrieves data from the load cell
-    weight = LoadCell.getData(); // get output value
-    Serial.print(weight); // print out the retrieved value to the second row
-    Serial.println(" grams"); // print out the retrieved value to the second row
-    displayWeight(String(weight,2));
-    return weight; 
 }

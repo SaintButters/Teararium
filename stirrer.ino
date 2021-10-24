@@ -3,7 +3,7 @@
 
 void stir() {
   // put your setup code here, to run once:
-  AFMS3.begin();  // create with the default frequency 1.6KHz
+    // create with the default frequency 1.6KHz
   //AFMS.begin(1000);  // OR with a different frequency, say 1KHz
   Serial.println("Starting stirring process");
 //  run_pump();

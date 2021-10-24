@@ -12,7 +12,7 @@ void initialize_steppers() {
     craneDriver.microsteps(16);
     
     craneStepper.setMaxSpeed(2*steps_per_mm); // 100mm/s @ 80 steps/mm
-    craneStepper.setAcceleration(1*steps_per_mm); // 2000mm/s^2
+    craneStepper.setAcceleration(0.5*steps_per_mm); // 2000mm/s^2
     craneStepper.setEnablePin(EN_PIN_craneStepper);
     craneStepper.setPinsInverted(false, false, true);
     craneStepper.enableOutputs();

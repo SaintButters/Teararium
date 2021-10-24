@@ -69,7 +69,10 @@ Servo arm_servo;
 Servo teaball_servo;
 
 //INIT Scale
-HX711_ADC LoadCell(42, 44); //  pin 42 et 44 digital PWM
+const int HX711_dout = 42; //mcu > HX711 dout pin
+const int HX711_sck = 44; //mcu > HX711 sck pin
+HX711_ADC LoadCell(HX711_dout, HX711_sck);
+unsigned long t = 0;
 // Or, create it with a different I2C address (say for stacking)
 // Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61); 
 
@@ -95,7 +98,7 @@ int thermoCLK = 22;
 int desired_temp = 20;
 MAX6675 thermocouple1(thermoCLK, thermoCS, thermoDO);
 //thermocouple1.setOffset(-10);
-//INIT RELAI
+//INIT RELAY
 int ThermoblockRelayPin1 = 43;
 int ThermoblockRelayPin2 = 45;
 int solenoidRelayPin = 47;
@@ -118,6 +121,14 @@ float up_to_down_time;
 
 void setup() {
   Serial.begin(9600);
+  //motors setup
+  AFMS2.begin();
+  AFMS3.begin();
+  stop_motor(1);
+  stop_motor(2);
+  stop_motor(3);
+  stop_teaball();
+  stop_pump();
   Serial.println("Teararium turned ON");
   setupMenu();
   Serial.println("Menu OK");
@@ -130,7 +141,7 @@ void setup() {
   pinMode(TeaBallUpSwitchPin, INPUT);
   ///Crane setup///
   Serial.println("Initializing motor Feather 1");
-//  AFMS.begin(1600);
+  
   Serial.println("motor Feather 1 initialized");
   ///Servos setup///
   //SETUP RELAY
@@ -141,9 +152,31 @@ void setup() {
   pinMode(ThermoblockRelayPin2, OUTPUT);
   digitalWrite(ThermoblockRelayPin2, HIGH);
   //SETUP SCALE
-  LoadCell.begin(); // start connection to HX711
-  LoadCell.start(2000); // load cells gets 2000ms of time to stabilize
-  LoadCell.setCalFactor(-6000); // à calibrer !
+   float calibrationValue; // calibration value
+  calibrationValue = -1710; // tested value 
+  LoadCell.begin();
+  unsigned long stabilizingtime = 2000; // tare preciscion can be improved by adding a few seconds of stabilizing time
+  boolean _tare = true; //set this to false if you don't want tare to be performed in the next step
+  LoadCell.start(stabilizingtime, _tare);
+  if (LoadCell.getTareTimeoutFlag()) {
+    Serial.println("Timeout, check MCU>HX711 wiring and pin designations");
+  }
+  else {
+    LoadCell.setCalFactor(calibrationValue); // set calibration factor (float)
+    Serial.println("Startup is complete");
+  }
+  while (!LoadCell.update());
+  Serial.println(LoadCell.getCalFactor());
+  Serial.println(LoadCell.getConversionTime());
+  Serial.println(LoadCell.getSPS());
+  Serial.println(LoadCell.getSettlingTime());
+  Serial.println("Note that the settling time may increase significantly if you use delay() in your sketch!");
+  if (LoadCell.getSPS() < 7) {
+    Serial.println("!!Sampling rate is lower than specification, check MCU>HX711 wiring and pin designations");
+  }
+  else if (LoadCell.getSPS() > 100) {
+    Serial.println("!!Sampling rate is higher than specification, check MCU>HX711 wiring and pin designations");
+  }
   //SETUP FLOW SENSOR
   pinMode(flowsensor, INPUT);
   digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
@@ -164,66 +197,49 @@ void loop() {
      prepare_tea(1);
   }
 
-  
+//  compute_weight();
   displayMenu();
 }
 
 void initialize_teararium(){
 
-
-//    heat_thermoblock();
-//    prepare_tea(1);
-//  arm_smooth_up();
-//  delay(3000);
-//  arm_smooth_down();
-//    delay(5000);
-//  arm_smooth_up();
-//  delay(3000);
-//    compute_weight();
-   
-//    close_teaball();
-//  pour_water(150);
-
-
-  initialize_crane();
-//  initialize_wagon();
-//  initialize_arm();
-//  displace_wagon(3);
-
   
-//  unload_tea(3);
-
-//  displace_wagon(4);
-  rotate_crane(2);
-  delay(2000);
-  rotate_crane(1);
-//  delay(2000);
+  initialize_arm();
+  delay(5000);
+//  initialize_crane();
+  initialize_wagon();
+  displace_wagon(3);
+  unload_tea(3);
+//  displace_wagon(1);
+//  rotate_crane(2);
 //  unsigned long StartTime = millis();
-//  pull_teaball_down();
+//  drop_teaball_down();
 //  unsigned long CurrentTime = millis();
 //  up_to_down_time = CurrentTime - StartTime;
 //  Serial.print("Temps de descente : ");
 //  Serial.println(up_to_down_time);
-//  delay(1000);
 //  open_teaball();
 //  displace_wagon(4);
 //  activate_shovel();
-//  delay(2000);
 //  displace_wagon(0);
 //  close_teaball();
 //  pull_teaball_up();
+//  arm_smooth_down();
+//  heat_thermoblock();
+//  pour_water(100, false);
 //  delay(2000);
+//  arm_smooth_up();
 //  rotate_crane(1);
 //  immerge_teaball();
-//  delay(2000);
+//  delay(180000);
 //  pull_teaball_up();
+//  delay(5000);
 //  rotate_crane(0);
-//  pull_teaball_down();
-//  delay(1000);
+//  drop_teaball_down();
 //  open_teaball();
 //  delay(3000);
 //  close_teaball();
-  pull_teaball_up();
+//  pull_teaball_up();
 
 
 
@@ -238,7 +254,7 @@ void initialize_teararium(){
 //  displace_wagon(0);
 //  pull_teaball_up();
 //  delay(2500);
-//  pull_teaball_down();
+//  drop_teaball_down();
 //  delay(1500);
 //  open_teaball();
 //  delay(3000);

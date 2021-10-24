@@ -51,7 +51,7 @@ void close_teaball(){
 void pull_teaball_up(){
   Serial.println("Pulling teaball up");
   TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
-  AFMS2.begin();  // create with the default frequency 1.6KHz
+    // create with the default frequency 1.6KHz
   CraneMotor->setSpeed(50);
   while (TeaBallUpSwitchValue !=HIGH){
     TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
@@ -60,10 +60,10 @@ void pull_teaball_up(){
   CraneMotor->setSpeed(0);
   }
 
-void pull_teaball_down(){
+void drop_teaball_down(){
   Serial.println("Pulling teaball down");
   TeaBallDownSwitchValue = digitalRead(TeaBallDownSwitchPin);
-  AFMS2.begin();  // create with the default frequency 1.6KHz
+    // create with the default frequency 1.6KHz
   CraneMotor->setSpeed(50);
   while (TeaBallDownSwitchValue !=HIGH){
     TeaBallDownSwitchValue = digitalRead(TeaBallDownSwitchPin);
@@ -72,9 +72,14 @@ void pull_teaball_down(){
   CraneMotor->setSpeed(0);
   }
 
+void stop_teaball(){
+  
+  CraneMotor->setSpeed(0);
+}
+
 void immerge_teaball(){
   Serial.println("Immerging teaball");
-  AFMS2.begin();  // create with the default frequency 1.6KHz
+    // create with the default frequency 1.6KHz
   CraneMotor->setSpeed(50);
   CraneMotor->run(BACKWARD);
   delay(up_to_down_time/2);
@@ -87,11 +92,11 @@ void immerge_teaball(){
     
   }
   else if (step_index==1){
-    CraneDestination = CraneHomePosition - 165;
+    CraneDestination = CraneHomePosition - 190;
 
   }
   else{
-        CraneDestination = CraneHomePosition  - 325;
+        CraneDestination = CraneHomePosition  - 335;
 
   }
   craneStepper.enableOutputs();

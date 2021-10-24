@@ -12,11 +12,11 @@
 #define SERIESRESISTOR 100000    
 
 int samples[NUMSAMPLES];
- float reading;
+float reading;
 uint8_t i;
 float average;
 
-float compute_temperature() {
+float computed_temperature() {
 
   // take N samples in a row, with a slight delay
   for (i=0; i< NUMSAMPLES; i++) {
@@ -47,9 +47,9 @@ float compute_temperature() {
   steinhart = 1.0 / steinhart;                 // Invert
   steinhart -= 273.15;                         // convert absolute temp to C
   
-  Serial.print("Temperature "); 
-  Serial.print(steinhart);
-  Serial.println(" *C");
+//  Serial.print("Temperature "); 
+//  Serial.print(steinhart);
+//  Serial.println(" *C");
   return steinhart;
 }
 

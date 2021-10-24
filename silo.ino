@@ -7,7 +7,7 @@ void run_motor(int tea_index, int timer_index) {
 //    motor = Silo2Motor}
 //  else if (tea_nb = 3){
 //    motor = Silo3Motor}
-//  AFMS2.begin();  // create with the default frequency 1.6KHz
+//    // create with the default frequency 1.6KHz
 //  motor->setSpeed(75);
 //  motor->run(BACKWARD);
 //  delay(3000);
@@ -17,7 +17,7 @@ void run_motor(int tea_index, int timer_index) {
 //  delay(2000);
 //  motor->run(FORWARD);
 //  delay(500);
-  AFMS2.begin();
+  
   int motor_speed = 125;
   
   if(tea_index == 1){
@@ -40,7 +40,7 @@ void run_motor(int tea_index, int timer_index) {
   }
   else if (tea_index == 3){
     Silo3Motor->setSpeed(motor_speed);
-    if (timer_index <= 1750){
+    if (timer_index <= 2000){
       Silo3Motor->run(BACKWARD);
     }
     else {
@@ -50,13 +50,17 @@ void run_motor(int tea_index, int timer_index) {
 }
 
 void stop_motor(int tea_index) {
+  
   if(tea_index == 1){
+    Serial.println("stopping silo motor1");
     Silo1Motor->setSpeed(0);
     }
   else if (tea_index == 2){
+    Serial.println("stopping silo motor2");
     Silo2Motor->setSpeed(0);
     }
   else if (tea_index == 3){
+    Serial.println("stopping silo motor3");
     Silo3Motor->setSpeed(0);
     }
 }
