@@ -8,11 +8,11 @@ void initialize_crane(){
    craneStepper.enableOutputs();
    while (craneSwitchPinValue != HIGH){
      craneSwitchPinValue = digitalRead(craneSwitchPin);
-     craneStepper.setSpeed(100);
+     craneStepper.setSpeed(-3500);
      craneStepper.runSpeed();
     }
-   craneSwitchPressed();
    CraneHomePosition = craneStepper.currentPosition();
+   craneSwitchPressed();
    Serial.println("Crane initialized");
 }
 
@@ -20,17 +20,18 @@ void initialize_crane(){
 void craneSwitchPressed(){
   Serial.println("Stop rotating the crane !!!");
   if (digitalRead(craneSwitchPinValue) == HIGH){
-    craneStepper.disableOutputs();
+    rotate_crane(0);
+//    craneStepper.disableOutputs();
   }
 } 
  void init_closed_teaball(){
   teaball_servo.write(closed_teaball_angle);
-  teaball_servo.attach(12);
+  teaball_servo.attach(8);
   delay(500);
   teaball_servo.detach();
  }
 void open_teaball(){
-  teaball_servo.attach(12);
+  teaball_servo.attach(8);
   for (pos = closed_teaball_angle; pos >= open_teaball_angle; pos -=1) {
     teaball_servo.write(pos);
     delay(8);
@@ -40,7 +41,7 @@ void open_teaball(){
 
 
 void close_teaball(){   
-  teaball_servo.attach(12);
+  teaball_servo.attach(8);
   for (pos =open_teaball_angle; pos <= closed_teaball_angle; pos +=1) {
     teaball_servo.write(pos);
     delay(8);
@@ -51,11 +52,11 @@ void close_teaball(){
 void pull_teaball_up(){
   Serial.println("Pulling teaball up");
   TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
-    // create with the default frequency 1.6KHz
-  CraneMotor->setSpeed(50);
+//    CraneMotor->setSpeed(50);
+  CraneMotor->setSpeed(200);
   while (TeaBallUpSwitchValue !=HIGH){
     TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
-    CraneMotor->run(FORWARD);
+    CraneMotor->run(BACKWARD);
   }
   CraneMotor->setSpeed(0);
   }
@@ -63,11 +64,11 @@ void pull_teaball_up(){
 void drop_teaball_down(){
   Serial.println("Pulling teaball down");
   TeaBallDownSwitchValue = digitalRead(TeaBallDownSwitchPin);
-    // create with the default frequency 1.6KHz
-  CraneMotor->setSpeed(50);
+    //    CraneMotor->setSpeed(50);
+  CraneMotor->setSpeed(200);
   while (TeaBallDownSwitchValue !=HIGH){
     TeaBallDownSwitchValue = digitalRead(TeaBallDownSwitchPin);
-    CraneMotor->run(BACKWARD);
+    CraneMotor->run(FORWARD);
   }
   CraneMotor->setSpeed(0);
   }
@@ -81,27 +82,28 @@ void immerge_teaball(){
   Serial.println("Immerging teaball");
     // create with the default frequency 1.6KHz
   CraneMotor->setSpeed(50);
-  CraneMotor->run(BACKWARD);
+  CraneMotor->run(FORWARD);
   delay(up_to_down_time/2);
   CraneMotor->setSpeed(0);
   }
 
  void rotate_crane(int step_index){
   if (step_index==0){
-    CraneDestination = CraneHomePosition;
+    CraneDestination = CraneHomePosition + 100;
     
   }
   else if (step_index==1){
-    CraneDestination = CraneHomePosition - 190;
+    CraneDestination = CraneHomePosition + 190;
 
   }
   else{
-        CraneDestination = CraneHomePosition  - 335;
+//        CraneDestination = CraneHomePosition  + 335;.
+      CraneDestination = CraneHomePosition  + 335;
 
   }
   craneStepper.enableOutputs();
     while (craneStepper.currentPosition() != CraneDestination) {
         craneStepper.runToNewPosition(CraneDestination);
     }
-  craneStepper.disableOutputs();
+//  craneStepper.disableOutputs();
 }

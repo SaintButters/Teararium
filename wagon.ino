@@ -1,7 +1,7 @@
 void initialize_wagon(){
   Serial.println("Starting Wagon initialization");
   shovel_servo.write(0);
-  shovel_servo.attach(11);
+  shovel_servo.attach(10);
   delay(500);
   shovel_servo.detach();
   wagonSwitchPinValue = digitalRead(wagonSwitchPin);
@@ -23,6 +23,7 @@ void wagonSwitchPressed(){
   Serial.println("Stop rolling the wagon!!!");
   delay(50);
   if (digitalRead(wagonSwitchPin) == HIGH){
+    Serial.println("hacua");
     wagonStepper.disableOutputs();
   }
 }  

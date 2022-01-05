@@ -1,5 +1,20 @@
 #include <Adafruit_MotorShield.h>
 
+int incomingByte = 0; // for incoming serial data
+
+void run_pump() {    
+  Serial.println("Activating pump");     
+  analogWrite(A1, 250);
+  analogWrite(A2, 0);
+  PumpMotorState = 1;
+}
+
+void stop_pump() {       
+  Serial.println("Stopping pump");       
+  digitalWrite(A1, LOW);
+  digitalWrite(A2, LOW);
+  PumpMotorState = 0;
+}
 
 void pour_water(int desired_volume, bool heatup) {
    Serial.println("Start pouring process");
@@ -52,7 +67,6 @@ void pour_water(int desired_volume, bool heatup) {
 
 void cleanse_pipes(){
   open_valve();
-  run_pump_reverse();
   delay(5000);
   stop_pump();
   close_valve();
@@ -68,26 +82,6 @@ void close_valve(){
   digitalWrite(solenoidRelayPin, HIGH);
 }
 
-void run_pump() {
-    // create with the default frequency 1.6KHz
-  PumpMotor->setSpeed(175);
-  PumpMotor->run(FORWARD);
-  PumpMotorState = 1;
-}
-
-void run_pump_reverse() {
-    // create with the default frequency 1.6KHz
-  PumpMotor->setSpeed(175);
-  PumpMotor->run(BACKWARD);
-  PumpMotorState = 1;
-}
-
-void stop_pump() {
-    // create with the default frequency 1.6KHz
-  PumpMotor->setSpeed(0);
-  PumpMotor->run(RELEASE);
-  PumpMotorState = 0;
-}
 
 float measure_flowrate () {
   currentTime = millis();

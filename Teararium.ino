@@ -15,11 +15,11 @@ int val2;
 int val3;   
 int craneSwitchPin = 31;  
 int craneSwitchPinValue;
-int wagonSwitchPin = 29;  
+int wagonSwitchPin = 33;  
 int wagonSwitchPinValue;
 int TeaBallUpSwitchPin = 25;  
 int TeaBallUpSwitchValue;
-int TeaBallDownSwitchPin = 27;  
+int TeaBallDownSwitchPin = 29;  
 int TeaBallDownSwitchValue;
 int WagonHomePosition;
 int WagonDestination = 0;
@@ -30,17 +30,28 @@ int arm_down_angle = 15;
 int closed_teaball_angle = 160; 
 int open_teaball_angle = 0;
 int pos=0;
+///PIN LED///
+int switchPinled1 = 22;              //led thé2
+int switchPinled2 = 24;              //led petite tasse
+int switchPinled3 = 26;              //led thé3
+int switchPinled4 = 28;              //led thé1
+int switchPinled5 = 30;              // 
+int switchPinled6 = 32;   
+///INIT DC MOTOR////
+#define A1 37  // Pump Motor A pins
+#define A2 39
 ///INIT STEPPER///
 #include <TMCStepper.h>
 
-#define EN_PIN_craneStepper           38 // Enable
-#define DIR_PIN_craneStepper         58 // Direction
-#define STEP_PIN_craneStepper         57 // Step
+#define EN_PIN_craneStepper           53 // Enable
+#define DIR_PIN_craneStepper         60 // Direction
+#define STEP_PIN_craneStepper         59 // Step
 #define SERIAL_PORT_craneStepper Serial1 // TMC2208/TMC2224 HardwareSerial port
 
-#define EN_PIN_wagonStepper           40 // Enable
-#define DIR_PIN_wagonStepper         60 // Direction
-#define STEP_PIN_wagonStepper         59 // Step
+
+#define EN_PIN_wagonStepper           48 // Enable
+#define DIR_PIN_wagonStepper         56 // Direction
+#define STEP_PIN_wagonStepper         55 // Step
 #define SERIAL_PORT_wagonStepper Serial1 // TMC2208/TMC2224 HardwareSerial port
 
 #define R_SENSE 0.11f // Match to your driver
@@ -60,8 +71,8 @@ AccelStepper wagonStepper = AccelStepper(wagonStepper.DRIVER, STEP_PIN_wagonStep
 
 // Create the motor shield object with its I2C address
 //Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x60); 
-Adafruit_MotorShield AFMS2 = Adafruit_MotorShield(0x61); 
-Adafruit_MotorShield AFMS3 = Adafruit_MotorShield(0x60); 
+Adafruit_MotorShield AFMS1 = Adafruit_MotorShield(0x61); 
+//Adafruit_MotorShield AFMS3 = Adafruit_MotorShield(0x60); 
 
 ///INIT SERVOS///
 Servo shovel_servo;  
@@ -69,8 +80,8 @@ Servo arm_servo;
 Servo teaball_servo;
 
 //INIT Scale
-const int HX711_dout = 42; //mcu > HX711 dout pin
-const int HX711_sck = 44; //mcu > HX711 sck pin
+const int HX711_dout = 41; //mcu > HX711 dout pin
+const int HX711_sck = 43; //mcu > HX711 sck pin
 HX711_ADC LoadCell(HX711_dout, HX711_sck);
 unsigned long t = 0;
 // Or, create it with a different I2C address (say for stacking)
@@ -78,12 +89,10 @@ unsigned long t = 0;
 
 // Connect a stepper motor with 200 steps per revolution (1.8 degree)
 // to motor port #2 (M3 and M4)
-Adafruit_DCMotor *Silo3Motor = AFMS2.getMotor(1);
-Adafruit_DCMotor *Silo2Motor = AFMS2.getMotor(3);
-Adafruit_DCMotor *Silo1Motor = AFMS2.getMotor(4);
-Adafruit_DCMotor *CraneMotor = AFMS2.getMotor(2);
-Adafruit_DCMotor *PumpMotor = AFMS3.getMotor(1);
-Adafruit_DCMotor *StirrerMotor = AFMS3.getMotor(2);
+Adafruit_DCMotor *Silo3Motor = AFMS1.getMotor(3);
+Adafruit_DCMotor *Silo2Motor = AFMS1.getMotor(2);
+Adafruit_DCMotor *Silo1Motor = AFMS1.getMotor(1);
+Adafruit_DCMotor *CraneMotor = AFMS1.getMotor(4);
 
 
 int PumpMotorState = 0;
@@ -99,9 +108,10 @@ int desired_temp = 20;
 MAX6675 thermocouple1(thermoCLK, thermoCS, thermoDO);
 //thermocouple1.setOffset(-10);
 //INIT RELAY
-int ThermoblockRelayPin1 = 43;
-int ThermoblockRelayPin2 = 45;
-int solenoidRelayPin = 47;
+int ThermoblockRelayPin1 = 42;
+int ThermoblockRelayPin2 = 46;
+int solenoidRelayPin = 44;
+int solenoid2RelayPin = 40;
 //INIT FLOW SENSOR
 volatile int flow_frequency; // Measures flow sensor pulses
 unsigned int L_per_hour; // Computed litres/hour
@@ -121,9 +131,15 @@ float up_to_down_time;
 
 void setup() {
   Serial.begin(9600);
+  ///Led Setup///
+  analogWrite(switchPinled1, 255);
+  analogWrite(switchPinled3, 255);
+  analogWrite(switchPinled4, 255);
+  analogWrite(switchPinled2, 255);
+  analogWrite(switchPinled5, 255);
+  analogWrite(switchPinled6, 255);
   //motors setup
-  AFMS2.begin();
-  AFMS3.begin();
+  AFMS1.begin();
   stop_motor(1);
   stop_motor(2);
   stop_motor(3);
@@ -203,13 +219,14 @@ void loop() {
 
 void initialize_teararium(){
 
-  
+
+
   initialize_arm();
-  delay(5000);
-//  initialize_crane();
+  initialize_crane();
   initialize_wagon();
-  displace_wagon(3);
-  unload_tea(3);
+//  drop_teaball_down();
+//  displace_wagon(3);
+//  unload_tea(3);
 //  displace_wagon(1);
 //  rotate_crane(2);
 //  unsigned long StartTime = millis();
@@ -224,14 +241,17 @@ void initialize_teararium(){
 //  displace_wagon(0);
 //  close_teaball();
 //  pull_teaball_up();
-//  arm_smooth_down();
-//  heat_thermoblock();
+  arm_smooth_down();
+
+
+  
+////  heat_thermoblock();
 //  pour_water(100, false);
 //  delay(2000);
 //  arm_smooth_up();
 //  rotate_crane(1);
 //  immerge_teaball();
-//  delay(180000);
+//  delay(3000);
 //  pull_teaball_up();
 //  delay(5000);
 //  rotate_crane(0);

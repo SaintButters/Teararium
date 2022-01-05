@@ -29,8 +29,9 @@ void init_scale(){
 
 
 float compute_weight() {
-
-   static boolean newDataReady = 0;
+  
+  float i = 0;
+  static boolean newDataReady = 0;
   const int serialPrintInterval = 500; //increase value to slow down serial print activity
 
   // check for new data/start next conversion:
@@ -39,8 +40,8 @@ float compute_weight() {
   // get smoothed value from the dataset:
   if (newDataReady) {
     if (millis() > t + serialPrintInterval) {
-      float i = LoadCell.getData();
-      Serial.print("Load_cell output val: ");
+      i = LoadCell.getData();
+//      Serial.print("Load_cell output val: ");
       Serial.println(i);
       newDataReady = 0;
       t = millis();
@@ -57,4 +58,8 @@ float compute_weight() {
   if (LoadCell.getTareStatus() == true) {
     Serial.println("Tare complete");
   }
+  Serial.print("Weight: ");
+  Serial.print(i);
+  Serial.println(" grams");
+  return i;
 }

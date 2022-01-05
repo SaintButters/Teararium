@@ -63,13 +63,13 @@ boolean middle = false;
 boolean lastMenu = false;
 ClickEncoder *encoder;
 int16_t last, value;
-Adafruit_PCD8544 display = Adafruit_PCD8544( 5, 4, 3); //Download the latest Adafruit Library in order to use this constructor
+Adafruit_PCD8544 display = Adafruit_PCD8544(13, 11, 5, 4, 3); //Download the latest Adafruit Library in order to use this constructor
 
 void setupMenu(){
   pinMode(7,OUTPUT);
   turnBacklightOn();
   
-  encoder = new ClickEncoder(A1, A0, A2);
+  encoder = new ClickEncoder(A8, A9, A10);
   encoder->setAccelerationEnabled(false);
    
   display.begin();      
@@ -571,12 +571,12 @@ void displayMenu() {
 
   void turnBacklightOn()
   {
-    digitalWrite(7,LOW);
+    digitalWrite(7,HIGH);
   }
 
     void turnBacklightOff()
   {
-    digitalWrite(7,HIGH);
+    digitalWrite(7,LOW);
   }
 
   void timerIsr() {

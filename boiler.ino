@@ -1,9 +1,10 @@
- int preheat_temp = 95;
+// int preheat_temp = 95;
+ int preheat_temp = 40;
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
  
  void heat_thermoblock(){
-   
+   Serial.println(String(computed_temperature()));
     while (computed_temperature() < preheat_temp) {
       turn_thermoblock_on();
       displayTemperature(String(computed_temperature(),1));

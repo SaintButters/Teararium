@@ -1,4 +1,4 @@
-#define THERMISTORPIN A8         
+#define THERMISTORPIN A12        
 // resistance at 25 degrees C
 #define THERMISTORNOMINAL 98000      
 // temp. for nominal resistance (almost always 25 C)
