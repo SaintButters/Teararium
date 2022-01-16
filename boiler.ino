@@ -1,36 +1,31 @@
 // int preheat_temp = 95;
- int preheat_temp = 40;
+ int preheat_temp = 80;
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
  
- void heat_thermoblock(){
-   Serial.println(String(computed_temperature()));
-    while (computed_temperature() < preheat_temp) {
-      turn_thermoblock_on();
-      displayTemperature(String(computed_temperature(),1));
-      Serial.print("temp = ");
-      Serial.print(String(computed_temperature()));
-      Serial.println(" degC");
-      delay(500);
+ void monitor_thermoblock(){
+    displayTemperature(String(computed_temperature(),0));
+    delay(500);
+    if(computed_temperature()>130)
+    {turn_thermoblock_off();
+    }
   }
+  
+
+  void preHeat_thermoblock(){
+    Serial.print("Pre heating thermoblock");
+    turn_thermoblock_on();
+    while (computed_temperature() < preheat_temp){
+      monitor_thermoblock();
+    }
     turn_thermoblock_off();
-//    while (computed_temperature() < 100000) {
-//      displayTemperature(String(computed_temperature(),1));
-//      Serial.print("temp = ");
-//      Serial.print(String(computed_temperature()));
-//      Serial.println(" degC");
-//      delay(500);
-//    }
- }
+  }
   
   void turn_thermoblock_on(){
-    
+
+    Serial.println("Turning thermoblock on");
     ThermoblockRelay1Value = digitalRead(ThermoblockRelayPin1);
-//    Serial.print("ThermoblockRelay1Value is ");
-//    Serial.println(ThermoblockRelay1Value);
     ThermoblockRelay2Value = digitalRead(ThermoblockRelayPin2);
-//    Serial.print("ThermoblockRelay2Value is ");
-//    Serial.println(ThermoblockRelay2Value);
     if (ThermoblockRelay1Value != LOW) {
     Serial.println("closing thermoblock relay 1");
     digitalWrite(ThermoblockRelayPin1, LOW);

@@ -81,9 +81,9 @@ void stop_teaball(){
 void immerge_teaball(){
   Serial.println("Immerging teaball");
     // create with the default frequency 1.6KHz
-  CraneMotor->setSpeed(50);
+  CraneMotor->setSpeed(100);
   CraneMotor->run(FORWARD);
-  delay(up_to_down_time/2);
+  delay(up_to_down_time*1.15);
   CraneMotor->setSpeed(0);
   }
 
@@ -93,12 +93,12 @@ void immerge_teaball(){
     
   }
   else if (step_index==1){
-    CraneDestination = CraneHomePosition + 190;
+    CraneDestination = CraneHomePosition + 305;
 
   }
   else{
 //        CraneDestination = CraneHomePosition  + 335;.
-      CraneDestination = CraneHomePosition  + 335;
+      CraneDestination = CraneHomePosition  + 470;
 
   }
   craneStepper.enableOutputs();

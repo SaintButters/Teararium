@@ -10,23 +10,38 @@ void prepare_tea(int tea_index){
 
 void unload_tea(int tea_index){
 //  delay(2000);
-  float desired_tea_weight = 2;
+  float desired_tea_weight = 2.5;
   float timer_index=0;
   float tea_weight= 0;
+  float initial_mesure = 0;
+  int timer =0;
+  int sense =0;
   init_scale();
-  while (tea_weight < desired_tea_weight) {
-//  while (tea_weight < 10000) {
-    run_motor(tea_index);
+  initial_mesure = compute_weight();
+  while (tea_weight < desired_tea_weight + initial_mesure) {
+    timer = timer + 1;
     tea_weight = compute_weight();
-//    timer_index = timer_index + 500;
-    
-//    if (timer_index == 3500)
-//      {timer_index = 0;}
-
-//  run_motor(tea_index, timer_index);
-  }
-//  delay(13000);
-
-  
+    delay(250); 
+    if (timer == 4){
+      if (sense == 0){
+        sense = 1;
+      }
+      else {
+        sense = 0;
+      }
+      run_motor(tea_index, sense);
+      timer = 0;
+      }
+    }
   stop_motor(tea_index);
   }
+
+void infusing_timer(int seconds){
+  int timer = seconds;
+    while (timer != 0){
+      display_timer(timer);
+      delay(1000);
+      timer = timer - 1;
+      Serial.println(timer);
+    }
+}

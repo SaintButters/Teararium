@@ -38,12 +38,12 @@ int switchPinled4 = 28;              //led thé1
 int switchPinled5 = 30;              // 
 int switchPinled6 = 32;   
 ///INIT DC MOTOR////
-#define A1 37  // Pump Motor A pins
-#define A2 39
+#define Pin1 37  // Pump Motor A pins
+#define Pin2 39
 ///INIT STEPPER///
 #include <TMCStepper.h>
 
-#define EN_PIN_craneStepper           53 // Enable
+#define EN_PIN_craneStepper           45 // Enable
 #define DIR_PIN_craneStepper         60 // Direction
 #define STEP_PIN_craneStepper         59 // Step
 #define SERIAL_PORT_craneStepper Serial1 // TMC2208/TMC2224 HardwareSerial port
@@ -71,9 +71,52 @@ AccelStepper wagonStepper = AccelStepper(wagonStepper.DRIVER, STEP_PIN_wagonStep
 
 // Create the motor shield object with its I2C address
 //Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x60); 
-Adafruit_MotorShield AFMS1 = Adafruit_MotorShield(0x61); 
+Adafruit_MotorShield AFMS1 = Adafruit_MotorShield(0x60); 
 //Adafruit_MotorShield AFMS3 = Adafruit_MotorShield(0x60); 
+///INIT MP3 AMP///
+#include <SoftwareSerial.h>
 
+#define ARDUINO_RX 14// Inverser RX et TX !!!!!
+#define ARDUINO_TX 15// Inverser RX et TX !!!!!
+SoftwareSerial myMP3(ARDUINO_RX, ARDUINO_TX);
+
+static int8_t Send_buf[6] = {0} ;
+/************Command byte**************************/
+/*basic commands*/
+#define CMD_PLAY  0X01
+#define CMD_PAUSE 0X02
+#define CMD_NEXT_SONG 0X03
+#define CMD_PREV_SONG 0X04
+#define CMD_VOLUME_UP   0X05
+#define CMD_VOLUME_DOWN 0X06
+#define CMD_FORWARD 0X0A // >>
+#define CMD_REWIND  0X0B // <<
+#define CMD_STOP 0X0E
+#define CMD_STOP_INJECT 0X0F//stop interruptting with a song, just stop the interlude
+
+/*5 bytes commands*/
+#define CMD_SEL_DEV 0X35
+#define DEV_TF 0X01
+#define CMD_IC_MODE 0X35
+#define CMD_SLEEP   0X03
+#define CMD_WAKE_UP 0X02
+#define CMD_RESET   0X05
+
+/*6 bytes commands*/  
+#define CMD_PLAY_W_INDEX   0X41
+#define CMD_PLAY_FILE_NAME 0X42
+#define CMD_INJECT_W_INDEX 0X43
+
+/*Special commands*/
+#define CMD_SET_VOLUME 0X31
+#define CMD_PLAY_W_VOL 0X31
+
+#define CMD_SET_PLAY_MODE 0X33
+#define ALL_CYCLE 0X00
+#define SINGLE_CYCLE 0X01
+
+#define CMD_PLAY_COMBINE 0X45//can play combination up to 15 songs
+void sendCommand(int8_t command, int16_t dat );
 ///INIT SERVOS///
 Servo shovel_servo;  
 Servo arm_servo;
@@ -89,11 +132,14 @@ unsigned long t = 0;
 
 // Connect a stepper motor with 200 steps per revolution (1.8 degree)
 // to motor port #2 (M3 and M4)
-Adafruit_DCMotor *Silo3Motor = AFMS1.getMotor(3);
-Adafruit_DCMotor *Silo2Motor = AFMS1.getMotor(2);
-Adafruit_DCMotor *Silo1Motor = AFMS1.getMotor(1);
-Adafruit_DCMotor *CraneMotor = AFMS1.getMotor(4);
-
+//Adafruit_DCMotor *Silo3Motor = AFMS1.getMotor(3);
+//Adafruit_DCMotor *Silo2Motor = AFMS1.getMotor(2);
+//Adafruit_DCMotor *Silo1Motor = AFMS1.getMotor(1);
+//Adafruit_DCMotor *CraneMotor = AFMS1.getMotor(4);
+Adafruit_DCMotor *Silo3Motor = AFMS1.getMotor(1);
+Adafruit_DCMotor *Silo2Motor = AFMS1.getMotor(4);
+Adafruit_DCMotor *Silo1Motor = AFMS1.getMotor(3);
+Adafruit_DCMotor *CraneMotor = AFMS1.getMotor(2);
 
 int PumpMotorState = 0;
 int StirrerMotorState = 0;
@@ -116,7 +162,7 @@ int solenoid2RelayPin = 40;
 volatile int flow_frequency; // Measures flow sensor pulses
 unsigned int L_per_hour; // Computed litres/hour
 unsigned int mL_per_sec; // Computed mL/sec
-unsigned char flowsensor = 18; //pin 18 is an interruptable pin, raises event to interrupt(5) : cf doc interrupt Arduino Mega 2560
+unsigned char flowsensor = 2; //pin 18 is an interruptable pin, raises event to interrupt(5) : cf doc interrupt Arduino Mega 2560
 int desired_volume; //mL
 float pouring_time;
 float volume_poured;
@@ -131,6 +177,8 @@ float up_to_down_time;
 
 void setup() {
   Serial.begin(9600);
+  //thermoblock setup
+  turn_thermoblock_off();
   ///Led Setup///
   analogWrite(switchPinled1, 255);
   analogWrite(switchPinled3, 255);
@@ -163,6 +211,8 @@ void setup() {
   //SETUP RELAY
   pinMode(solenoidRelayPin, OUTPUT);
   digitalWrite(solenoidRelayPin, HIGH);
+  pinMode(solenoid2RelayPin, OUTPUT);
+  digitalWrite(solenoid2RelayPin, HIGH);
   pinMode(ThermoblockRelayPin1, OUTPUT);
   digitalWrite(ThermoblockRelayPin1, HIGH);
   pinMode(ThermoblockRelayPin2, OUTPUT);
@@ -179,7 +229,7 @@ void setup() {
   }
   else {
     LoadCell.setCalFactor(calibrationValue); // set calibration factor (float)
-    Serial.println("Startup is complete");
+    Serial.println("Load cell startup is complete");
   }
   while (!LoadCell.update());
   Serial.println(LoadCell.getCalFactor());
@@ -193,25 +243,39 @@ void setup() {
   else if (LoadCell.getSPS() > 100) {
     Serial.println("!!Sampling rate is higher than specification, check MCU>HX711 wiring and pin designations");
   }
+  //SETUP PUMP DC MOTOR
+  pinMode(Pin1, OUTPUT);
+  pinMode(Pin2, OUTPUT);
+  digitalWrite(Pin1, LOW);
+  digitalWrite(Pin2, LOW);
   //SETUP FLOW SENSOR
   pinMode(flowsensor, INPUT);
   digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
-  attachInterrupt(5, flow, RISING); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
+  attachInterrupt(digitalPinToInterrupt(flowsensor), flow, RISING); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
   sei(); // Enable interrupts
   currentTime = millis();
   cloopTime = currentTime;
+  //SETUP MP3 AMP
+  digitalWrite(49, HIGH);
+  delay(2500);
+  myMP3.begin(9600);
+  delay(500);//Wait chip initialization is complete
+  sendCommand(CMD_SEL_DEV, DEV_TF);//select the TF card  
+  delay(200);//wait for 200ms
+  
   initialize_steppers();
   initialize_teararium();
 }
 
 void loop() {
-  analogReference(EXTERNAL);
+//  analogReference(EXTERNAL);
   val1 = digitalRead(Tea1switchPin);
 //  val2 = digitalRead(Tea2switchPin);
 //  val3 = digitalRead(Tea3switchPin);
-  if (val1 == HIGH) { 
-     prepare_tea(1);
-  }
+//Serial.println(val1);
+//  if (val1 == HIGH) { 
+//     prepare_tea(1);
+//  }
 
 //  compute_weight();
   displayMenu();
@@ -219,12 +283,11 @@ void loop() {
 
 void initialize_teararium(){
 
-
-
-  initialize_arm();
-  initialize_crane();
-  initialize_wagon();
-//  drop_teaball_down();
+  //  playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
+infusing_timer(50);
+//  initialize_arm();
+//  initialize_wagon();
+//  initialize_crane();
 //  displace_wagon(3);
 //  unload_tea(3);
 //  displace_wagon(1);
@@ -241,19 +304,16 @@ void initialize_teararium(){
 //  displace_wagon(0);
 //  close_teaball();
 //  pull_teaball_up();
-  arm_smooth_down();
-
-
-  
-////  heat_thermoblock();
-//  pour_water(100, false);
-//  delay(2000);
+//  arm_smooth_down();
+//  pour_water(300, true);
+//  delay(1000);
 //  arm_smooth_up();
+//  delay(1000);
 //  rotate_crane(1);
 //  immerge_teaball();
-//  delay(3000);
+//  delay(180000);
 //  pull_teaball_up();
-//  delay(5000);
+//  delay(60000);
 //  rotate_crane(0);
 //  drop_teaball_down();
 //  open_teaball();
@@ -264,25 +324,6 @@ void initialize_teararium(){
 
 
 
-  
-////  initialize_arm();
-//  displace_wagon(3);
-////  delay(1000);
-//  run_motor1();
-//  displace_wagon(4);
-//  activate_shovel();
-//  displace_wagon(0);
-//  pull_teaball_up();
-//  delay(2500);
-//  drop_teaball_down();
-//  delay(1500);
-//  open_teaball();
-//  delay(3000);
-//  close_teaball();
-//    stir();
-//    stop_stirring();
-  //  arm_smooth_up();
-//  prepare_tea(1);
-
+ 
 
 }

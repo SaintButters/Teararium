@@ -2,7 +2,7 @@ void init_scale(){
   float calibrationValue; // calibration value
   calibrationValue = -1710; // tested value 
   LoadCell.begin();
-  unsigned long stabilizingtime = 3000; // tare preciscion can be improved by adding a few seconds of stabilizing time
+  unsigned long stabilizingtime = 5000; // tare preciscion can be improved by adding a few seconds of stabilizing time
   boolean _tare = true; //set this to false if you don't want tare to be performed in the next step
   LoadCell.start(stabilizingtime, _tare);
   if (LoadCell.getTareTimeoutFlag()) {
@@ -42,7 +42,9 @@ float compute_weight() {
     if (millis() > t + serialPrintInterval) {
       i = LoadCell.getData();
 //      Serial.print("Load_cell output val: ");
-      Serial.println(i);
+      Serial.print("Weight: ");
+      Serial.print(i);
+      Serial.println(" grams");
       newDataReady = 0;
       t = millis();
     }
@@ -58,8 +60,5 @@ float compute_weight() {
   if (LoadCell.getTareStatus() == true) {
     Serial.println("Tare complete");
   }
-  Serial.print("Weight: ");
-  Serial.print(i);
-  Serial.println(" grams");
   return i;
 }
