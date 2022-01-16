@@ -284,42 +284,42 @@ void loop() {
 void initialize_teararium(){
 
   //  playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
-infusing_timer(50);
-//  initialize_arm();
-//  initialize_wagon();
-//  initialize_crane();
-//  displace_wagon(3);
-//  unload_tea(3);
-//  displace_wagon(1);
-//  rotate_crane(2);
-//  unsigned long StartTime = millis();
-//  drop_teaball_down();
-//  unsigned long CurrentTime = millis();
-//  up_to_down_time = CurrentTime - StartTime;
-//  Serial.print("Temps de descente : ");
-//  Serial.println(up_to_down_time);
-//  open_teaball();
-//  displace_wagon(4);
-//  activate_shovel();
-//  displace_wagon(0);
-//  close_teaball();
-//  pull_teaball_up();
-//  arm_smooth_down();
-//  pour_water(300, true);
-//  delay(1000);
-//  arm_smooth_up();
-//  delay(1000);
-//  rotate_crane(1);
-//  immerge_teaball();
-//  delay(180000);
-//  pull_teaball_up();
-//  delay(60000);
-//  rotate_crane(0);
-//  drop_teaball_down();
-//  open_teaball();
-//  delay(3000);
-//  close_teaball();
-//  pull_teaball_up();
+//infusing_timer(110);
+  initialize_arm();
+  initialize_wagon();
+  initialize_crane();
+  displace_wagon(3);
+  unload_tea(3);
+  displace_wagon(1);
+  rotate_crane(2);
+  unsigned long StartTime = millis();
+  drop_teaball_down();
+  unsigned long CurrentTime = millis();
+  up_to_down_time = CurrentTime - StartTime;
+  Serial.print("Temps de descente : ");
+  Serial.println(up_to_down_time);
+  open_teaball();
+  displace_wagon(4);
+  activate_shovel();
+  displace_wagon(0);
+  close_teaball();
+  pull_teaball_up();
+  arm_smooth_down();
+  pour_water(300, true);
+  delay(1000);
+  arm_smooth_up();
+  delay(1000);
+  rotate_crane(1);
+  immerge_teaball();
+  infusing_timer(180);
+  pull_teaball_up();
+  delay(60000);
+  rotate_crane(0);
+  drop_teaball_down();
+  open_teaball();
+  delay(3000);
+  close_teaball();
+  pull_teaball_up();
 
 
 

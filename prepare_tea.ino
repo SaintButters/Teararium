@@ -10,7 +10,7 @@ void prepare_tea(int tea_index){
 
 void unload_tea(int tea_index){
 //  delay(2000);
-  float desired_tea_weight = 2.5;
+  float desired_tea_weight = 3;
   float timer_index=0;
   float tea_weight= 0;
   float initial_mesure = 0;
@@ -38,7 +38,7 @@ void unload_tea(int tea_index){
 
 void infusing_timer(int seconds){
   int timer = seconds;
-    while (timer != 0){
+    while (timer != -1){
       display_timer(timer);
       delay(1000);
       timer = timer - 1;

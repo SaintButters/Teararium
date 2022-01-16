@@ -69,7 +69,7 @@ void display_timer(int seconds){
     display.setCursor(10, 0);
     display.print("Infusing...");
     display.drawFastHLine(0,10,83,BLACK);
-    display.setCursor(15, 20);
+    display.setCursor(20, 20);
     display.setTextSize(3);
     display.print(seconds);
     display.setTextSize(2);

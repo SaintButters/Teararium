@@ -93,7 +93,7 @@ void immerge_teaball(){
     
   }
   else if (step_index==1){
-    CraneDestination = CraneHomePosition + 305;
+    CraneDestination = CraneHomePosition + 300;
 
   }
   else{
