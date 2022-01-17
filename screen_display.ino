@@ -75,3 +75,17 @@ void display_timer(int seconds){
     display.setTextSize(2);
     display.display();
 }
+
+void display_weight(float weight){
+    display.setTextSize(1);
+    display.clearDisplay();
+    display.setTextColor(BLACK, WHITE);
+    display.setCursor(10, 0);
+    display.print("Weight:");
+    display.drawFastHLine(0,10,83,BLACK);
+    display.setCursor(5, 20);
+    display.setTextSize(1);
+    display.print(weight);
+    display.println(" grams");
+    display.display();
+}

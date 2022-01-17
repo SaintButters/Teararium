@@ -45,6 +45,7 @@ float compute_weight() {
       Serial.print("Weight: ");
       Serial.print(i);
       Serial.println(" grams");
+      display_weight(i);
       newDataReady = 0;
       t = millis();
     }
