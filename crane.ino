@@ -93,12 +93,12 @@ void immerge_teaball(){
     
   }
   else if (step_index==1){
-    CraneDestination = CraneHomePosition + 300;
+    CraneDestination = CraneHomePosition + 305;
 
   }
   else{
 //        CraneDestination = CraneHomePosition  + 335;.
-      CraneDestination = CraneHomePosition  + 470;
+      CraneDestination = CraneHomePosition  + 460;
 
   }
   craneStepper.enableOutputs();

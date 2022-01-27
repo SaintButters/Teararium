@@ -64,7 +64,7 @@ void pour_water(int desired_volume, bool heatup) {
 void purge_pipes(){
   open_vent_valve();
   run_pump(150);
-  delay(2000);
+  delay(500);
   close_vent_valve();
   stop_pump();
 }

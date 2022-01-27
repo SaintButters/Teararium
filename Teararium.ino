@@ -7,12 +7,12 @@
 #include <HX711_ADC.h> // https://github.com/olkal/HX711_ADC
 #include <Wire.h>
     
-int Tea1switchPin = 2;
-//int Tea2switchPin = 24;
-//int Tea3switchPin = 26;
-int val1;    
-int val2;   
-int val3;   
+int Tea1switchPin = 35;
+int Tea2switchPin = 27;
+int Tea3switchPin = 23;
+int smallCupSwitchPin = 34;
+int largeCupSwitchPin = 36;
+int teapotSwitchPin = 38;  
 int craneSwitchPin = 31;  
 int craneSwitchPinValue;
 int wagonSwitchPin = 33;  
@@ -31,12 +31,12 @@ int closed_teaball_angle = 160;
 int open_teaball_angle = 0;
 int pos=0;
 ///PIN LED///
-int switchPinled1 = 22;              //led thé2
-int switchPinled2 = 24;              //led petite tasse
-int switchPinled3 = 26;              //led thé3
+int switchPinled1 = 24;              //led thé2
+int switchPinled2 = 32;              //led petite tasse
+int switchPinled3 = 30;              //led thé3
 int switchPinled4 = 28;              //led thé1
-int switchPinled5 = 30;              // 
-int switchPinled6 = 32;   
+int switchPinled5 = 22;              // 
+int switchPinled6 = 26;   
 ///INIT DC MOTOR////
 #define Pin1 37  // Pump Motor A pins
 #define Pin2 39
@@ -173,7 +173,9 @@ unsigned long currentTime;
 unsigned long cloopTime;
 //Crane inputs
 float up_to_down_time;
-
+//power input
+int powerPin = 18;
+boolean powerButtonState = LOW; 
 
 void setup() {
   Serial.begin(9600);
@@ -181,9 +183,9 @@ void setup() {
   turn_thermoblock_off();
   ///Led Setup///
   analogWrite(switchPinled1, 255);
+  analogWrite(switchPinled2, 255);
   analogWrite(switchPinled3, 255);
   analogWrite(switchPinled4, 255);
-  analogWrite(switchPinled2, 255);
   analogWrite(switchPinled5, 255);
   analogWrite(switchPinled6, 255);
   //motors setup
@@ -198,8 +200,11 @@ void setup() {
   Serial.println("Menu OK");
   //set tea switches as inputs
   pinMode(Tea1switchPin, INPUT);
-//  pinMode(Tea2switchPin, INPUT);
-//  pinMode(Tea3switchPin, INPUT);
+  pinMode(Tea2switchPin, INPUT);
+  pinMode(Tea3switchPin, INPUT);
+  pinMode(smallCupSwitchPin, INPUT);
+  pinMode(largeCupSwitchPin, INPUT);
+  pinMode(teapotSwitchPin, INPUT);
   pinMode(craneSwitchPin, INPUT);    // Set the switch pin as input
   pinMode(TeaBallDownSwitchPin, INPUT);
   pinMode(TeaBallUpSwitchPin, INPUT);
@@ -262,35 +267,66 @@ void setup() {
   delay(500);//Wait chip initialization is complete
   sendCommand(CMD_SEL_DEV, DEV_TF);//select the TF card  
   delay(200);//wait for 200ms
-  
+  //SETUP INTERRUPT POWER UP
+  pinMode(18, INPUT);
+  digitalWrite(18, LOW);
+//  attachInterrupt(digitalPinToInterrupt(18), pwrUp, CHANGE); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
+
+  //INIT
   initialize_steppers();
   initialize_teararium();
 }
 
 void loop() {
 //  analogReference(EXTERNAL);
-  val1 = digitalRead(Tea1switchPin);
-//  val2 = digitalRead(Tea2switchPin);
-//  val3 = digitalRead(Tea3switchPin);
-//Serial.println(val1);
-//  if (val1 == HIGH) { 
+  getTeaChoice();
+  getTeaSize();
 //     prepare_tea(1);
-//  }
-
-//  compute_weight();
+  
   displayMenu();
+  if(debouncePowerButton(powerButtonState) == HIGH && powerButtonState == LOW)
+  {
+    powerButtonState = HIGH;
+    pwrUp();    
+  }
+  else if(debouncePowerButton(powerButtonState) == LOW && powerButtonState == HIGH)
+  {
+    Serial.println("Power down");
+    powerButtonState = LOW;
+  }
+}
+
+void pwrUp(){
+  Serial.println("Power up");
+//  initialize_steppers();
+//  initialize_arm();
+//  initialize_wagon();
+//  initialize_crane();
+}
+
+boolean debouncePowerButton(boolean state)
+{
+  boolean stateNow = digitalRead(powerPin);
+  if(state!=stateNow)
+  {
+    delay(10);
+    stateNow = digitalRead(powerPin);
+  }
+  return stateNow;
+  
 }
 
 void initialize_teararium(){
 
-    playWithVolume(0X0F08);//play the 9th (09) song with volume 20(0x14) class
 //    playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
-  
+//    playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
+//
 //  initialize_arm();
 //  initialize_wagon();
 //  initialize_crane();
 //  displace_wagon(3);
 //  unload_tea(3);
+//playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class;
 //  displace_wagon(1);
 //  rotate_crane(2);
 //  unsigned long StartTime = millis();
@@ -306,7 +342,7 @@ void initialize_teararium(){
 //  close_teaball();
 //  pull_teaball_up();
 //  arm_smooth_down();
-//  pour_water(300, true);
+//  pour_water(325, true);
 //  delay(1000);
 //  arm_smooth_up();
 //  delay(1000);
@@ -314,17 +350,14 @@ void initialize_teararium(){
 //  immerge_teaball();
 //  infusing_timer(180);
 //  pull_teaball_up();
-//  delay(60000);
+//  delay(30000);
 //  rotate_crane(0);
 //  drop_teaball_down();
 //  open_teaball();
 //  delay(3000);
-//  close_teaball();
-//  pull_teaball_up();
 
 
 
 
- 
 
 }
