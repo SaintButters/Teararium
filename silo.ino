@@ -22,7 +22,7 @@ void run_motor(int tea_index, int sense) {
   }
   else if (tea_index == 3){
     Serial.println("Activating silo motor 3");
-    Silo3Motor->setSpeed(220);
+    Silo3Motor->setSpeed(215);
     if (sense == 0){
       Silo3Motor->run(FORWARD);
       }

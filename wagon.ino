@@ -13,8 +13,6 @@ void initialize_wagon(){
   }
    wagonSwitchPressed();
    WagonHomePosition = wagonStepper.currentPosition();
-   
-   
    Serial.println(WagonHomePosition);
    Serial.println("Wagon initialized");
 }
@@ -23,7 +21,6 @@ void wagonSwitchPressed(){
   Serial.println("Stop rolling the wagon!!!");
   delay(50);
   if (digitalRead(wagonSwitchPin) == HIGH){
-    Serial.println("hacua");
     wagonStepper.disableOutputs();
   }
 }  

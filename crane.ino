@@ -13,7 +13,7 @@ void initialize_crane(){
     }
    CraneHomePosition = craneStepper.currentPosition();
    craneSwitchPressed();
-   Serial.println("Crane initialized");
+//   Serial.println("Crane initialized");
 }
 
 
@@ -24,6 +24,7 @@ void craneSwitchPressed(){
 //    craneStepper.disableOutputs();
   }
 } 
+
  void init_closed_teaball(){
   teaball_servo.write(closed_teaball_angle);
   teaball_servo.attach(8);
@@ -88,6 +89,8 @@ void immerge_teaball(){
   }
 
  void rotate_crane(int step_index){
+  Serial.print("Rotating crane to : ");
+  Serial.println(step_index);
   if (step_index==0){
     CraneDestination = CraneHomePosition + 100;
     
@@ -105,5 +108,6 @@ void immerge_teaball(){
     while (craneStepper.currentPosition() != CraneDestination) {
         craneStepper.runToNewPosition(CraneDestination);
     }
+    Serial.println("Crane rotation completed");
 //  craneStepper.disableOutputs();
 }

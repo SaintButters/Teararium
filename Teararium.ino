@@ -37,6 +37,8 @@ int switchPinled3 = 30;              //led thé3
 int switchPinled4 = 28;              //led thé1
 int switchPinled5 = 22;              // 
 int switchPinled6 = 26;   
+///PIN POWER///
+int powerpin = 16;
 ///INIT DC MOTOR////
 #define Pin1 37  // Pump Motor A pins
 #define Pin2 39
@@ -176,18 +178,23 @@ float up_to_down_time;
 //power input
 int powerPin = 18;
 boolean powerButtonState = LOW; 
+//tea_selection
+int TeaSize = 0;
+int teaChoice = 0;
+boolean power = false;
+boolean teararium_initialized = false;
 
 void setup() {
   Serial.begin(9600);
   //thermoblock setup
   turn_thermoblock_off();
   ///Led Setup///
-  analogWrite(switchPinled1, 255);
-  analogWrite(switchPinled2, 255);
-  analogWrite(switchPinled3, 255);
-  analogWrite(switchPinled4, 255);
-  analogWrite(switchPinled5, 255);
-  analogWrite(switchPinled6, 255);
+  analogWrite(switchPinled1, 0);
+  analogWrite(switchPinled2, 0);
+  analogWrite(switchPinled3, 0);
+  analogWrite(switchPinled4, 0);
+  analogWrite(switchPinled5, 0);
+  analogWrite(switchPinled6, 0);
   //motors setup
   AFMS1.begin();
   stop_motor(1);
@@ -271,37 +278,53 @@ void setup() {
   pinMode(18, INPUT);
   digitalWrite(18, LOW);
 //  attachInterrupt(digitalPinToInterrupt(18), pwrUp, CHANGE); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
-
   //INIT
-  initialize_steppers();
+  Serial.println("Arduino ready !!!");
   initialize_teararium();
 }
 
 void loop() {
-//  analogReference(EXTERNAL);
-  getTeaChoice();
+//  watchPower();
   getTeaSize();
-//     prepare_tea(1);
-  
+  getTeaChoice();
   displayMenu();
+//  initialize_teararium(); 
+  if(power==true){
+    if(teararium_initialized == false){
+//      initialize_teararium();    
+      }
+  }
+}
+
+void watchPower(){
   if(debouncePowerButton(powerButtonState) == HIGH && powerButtonState == LOW)
   {
     powerButtonState = HIGH;
+    power = true;
+    Serial.println("Power up");
     pwrUp();    
   }
   else if(debouncePowerButton(powerButtonState) == LOW && powerButtonState == HIGH)
   {
-    Serial.println("Power down");
     powerButtonState = LOW;
+    power = false;
+    Serial.println("Power down");
+//    pwrDwn();
   }
 }
 
 void pwrUp(){
-  Serial.println("Power up");
-//  initialize_steppers();
-//  initialize_arm();
-//  initialize_wagon();
-//  initialize_crane();
+  initialize_teararium();
+}
+
+void pwrDwn(){
+  
+  analogWrite(switchPinled1, 0);
+  analogWrite(switchPinled2, 0);
+  analogWrite(switchPinled3, 0);
+  analogWrite(switchPinled4, 0);
+  analogWrite(switchPinled5, 0);
+  analogWrite(switchPinled6, 0);
 }
 
 boolean debouncePowerButton(boolean state)
@@ -313,51 +336,25 @@ boolean debouncePowerButton(boolean state)
     stateNow = digitalRead(powerPin);
   }
   return stateNow;
-  
 }
 
 void initialize_teararium(){
 
-//    playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
-//    playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
-//
-//  initialize_arm();
-//  initialize_wagon();
-//  initialize_crane();
-//  displace_wagon(3);
-//  unload_tea(3);
-//playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class;
-//  displace_wagon(1);
-//  rotate_crane(2);
-//  unsigned long StartTime = millis();
-//  drop_teaball_down();
-//  unsigned long CurrentTime = millis();
-//  up_to_down_time = CurrentTime - StartTime;
-//  Serial.print("Temps de descente : ");
-//  Serial.println(up_to_down_time);
-//  open_teaball();
-//  displace_wagon(4);
-//  activate_shovel();
-//  displace_wagon(0);
-//  close_teaball();
-//  pull_teaball_up();
-//  arm_smooth_down();
-//  pour_water(325, true);
-//  delay(1000);
-//  arm_smooth_up();
-//  delay(1000);
-//  rotate_crane(1);
-//  immerge_teaball();
-//  infusing_timer(180);
-//  pull_teaball_up();
-//  delay(30000);
-//  rotate_crane(0);
-//  drop_teaball_down();
-//  open_teaball();
-//  delay(3000);
-
-
-
+   //playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
+  analogWrite(switchPinled1, 255);
+  analogWrite(switchPinled2, 255);
+  analogWrite(switchPinled3, 255);
+  analogWrite(switchPinled4, 255);
+  analogWrite(switchPinled5, 255);
+  analogWrite(switchPinled6, 255);
+  initialize_steppers();
+  initialize_arm();
+  initialize_wagon();
+  initialize_crane();
+  TeaSize = 0;
+  teaChoice = 0;
+  teararium_initialized = true;
+  log_info("Teararium initialized !", 1, 0 , 10);
 
 
 }

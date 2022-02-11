@@ -1,5 +1,5 @@
 // int preheat_temp = 95;
- int preheat_temp = 75;
+ int preheat_temp = 55;
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
  
