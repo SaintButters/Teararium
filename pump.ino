@@ -13,18 +13,14 @@ void stop_pump() {
   Serial.println("Stopping pump");      
   digitalWrite(Pin1, LOW);
   digitalWrite(Pin2, LOW);
-//  analogWrite(A1, 0);
-//  analogWrite(A2, 0);
   PumpMotorState = 0;
 }
 
-void pour_water(int desired_volume, bool heatup) {
+void pour_water(int desired_volume, bool heating, bool preheating) {
    Serial.println("Start pouring process");
-//  open_valve();
   pouring_time = 0;
   volume_poured = 0;
   // turn LED on:  
-  uint8_t i;
   Serial.print("temp = ");
   Serial.print(String(computed_temperature()));
   Serial.println(" degC");
@@ -32,14 +28,23 @@ void pour_water(int desired_volume, bool heatup) {
   Serial.println(arm_servo.read());
   if (130<arm_servo.read()<140){
     if (PumpMotorState == 0) {
-      if (heatup == true){
+      if (preheating == true){
         preHeat_thermoblock();
       }
+      delay(500);
       close_vent_valve();
+      delay(1000);
       open_valve();
+      delay(1000);
       run_pump(220);
-      turn_thermoblock_on();
+      if (heating == true){
+        turn_thermoblock_on();
+      }
       while (volume_poured < desired_volume) {
+        if (turn_off == true){
+          turn_thermoblock_off();
+          return;
+        }
         flowrate = measure_flowrate();
         step_volume_poured = 0.180 * flowrate;
         volume_poured = step_volume_poured + volume_poured;
@@ -54,8 +59,11 @@ void pour_water(int desired_volume, bool heatup) {
         Serial.println(" degC");
         displayPouring(String(computed_temperature(),0),String(flowrate,0),String(volume_poured,0));
       }
+      delay(1000);
       turn_thermoblock_off();
+      delay(1000);
       close_valve();
+      delay(1000);
       purge_pipes();
     }
   }

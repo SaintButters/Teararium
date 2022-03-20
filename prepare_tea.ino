@@ -2,38 +2,129 @@
 
 void prepare_tea(int tea_index){
   log_info("Starting Tea preparation", 1, 0 , 10);  
+  if (turn_off == true){
+    return;
+  }
   initialize_arm();
+  if (turn_off == true){
+    return;
+  }
   initialize_wagon();
-  initialize_crane();
+  if (turn_off == true){
+    return;
+  }
+  initialize_crane(true);
+  if (turn_off == true){
+    return;
+  }
+  if (turn_off == true){
+    return;
+  }
+  pull_teaball_up();
+  if (turn_off == true){
+    return;
+  }
   displace_wagon(tea_index);
+  if (turn_off == true){
+    return;
+  }
   unload_tea(tea_index);
+  if (turn_off == true){
+    return;
+  }
   displace_wagon(1);
+  if (turn_off == true){
+    return;
+  }
   rotate_crane(2);
+  if (turn_off == true){
+    return;
+  }
   unsigned long StartTime = millis();
     drop_teaball_down();
+    if (turn_off == true){
+    return;
+  }
   unsigned long CurrentTime = millis();
   up_to_down_time = CurrentTime - StartTime;
   Serial.print("Temps de descente : ");
   Serial.println(up_to_down_time);
+  if (turn_off == true){
+    return;
+  }
   open_teaball();
+  if (turn_off == true){
+    return;
+  }
   delay(2000); // test open teabull
   displace_wagon(4);
+  if (turn_off == true){
+    return;
+  }
   activate_shovel();
+  if (turn_off == true){
+    return;
+  }
   displace_wagon(0);
+  if (turn_off == true){
+    return;
+  }
   close_teaball();
+  if (turn_off == true){
+    return;
+  }
   pull_teaball_up();
+  if (turn_off == true){
+    return;
+  }
   arm_smooth_down();
-  pour_water(325, true);
+  if (turn_off == true){
+    return;
+  }
+  pour_water(325, true, true);
+  if (turn_off == true){
+    return;
+  }
   delay(1000);
+  if (turn_off == true){
+    return;
+  }
   arm_smooth_up();
+  if (turn_off == true){
+    return;
+  }
   delay(1000);
+  if (turn_off == true){
+    return;
+  }
   rotate_crane(1);
+  if (turn_off == true){
+    return;
+  }
   immerge_teaball();
+  if (turn_off == true){
+    return;
+  }
   infusing_timer(180);
+  if (turn_off == true){
+    return;
+  }
   pull_teaball_up();
-  delay(30000);
+  if (turn_off == true){
+    return;
+  }
+  delay(10000);
+  if (turn_off == true){
+    return;
+  }
   rotate_crane(0);
+  if (turn_off == true){
+    return;
+  }
   drop_teaball_down();
+  if (turn_off == true){
+    return;
+  }
   open_teaball();
 }
 
@@ -49,6 +140,10 @@ void unload_tea(int tea_index){
   init_scale();
   initial_mesure = compute_weight();
   while (tea_weight < desired_tea_weight + initial_mesure) {
+    if (turn_off == true){
+        stop_motor(tea_index);
+        return;
+      }
 //   while (roll_timer < 35) {
     timer = timer + 1;
     roll_timer = roll_timer +1;
@@ -72,13 +167,16 @@ void infusing_timer(int seconds){
   int timer = seconds;
   int wiggle_timer = 0;
   while (timer != -1){
+      if (turn_off == true){
+        return;
+      }
       display_timer(timer);
       if (wiggle_timer == 20){
-        CraneMotor->setSpeed(100);
+        CraneMotor->setSpeed(75);
         CraneMotor->run(BACKWARD);
       }
       if (wiggle_timer == 21){
-        CraneMotor->setSpeed(100);
+        CraneMotor->setSpeed(50);
         CraneMotor->run(FORWARD);
         wiggle_timer =0;
       }
@@ -153,6 +251,7 @@ void getTeaChoice(){
     else{
     Serial.println("Preparing Tea 3");
     prepare_tea(3);
+
     }
   }
 }

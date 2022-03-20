@@ -37,8 +37,8 @@ int switchPinled3 = 30;              //led thé3
 int switchPinled4 = 28;              //led thé1
 int switchPinled5 = 22;              // 
 int switchPinled6 = 26;   
-///PIN POWER///
-int powerpin = 16;
+int ledPin=17;
+int firefliesPin=54;
 ///INIT DC MOTOR////
 #define Pin1 37  // Pump Motor A pins
 #define Pin2 39
@@ -72,7 +72,6 @@ AccelStepper craneStepper = AccelStepper(craneStepper.DRIVER, STEP_PIN_craneStep
 AccelStepper wagonStepper = AccelStepper(wagonStepper.DRIVER, STEP_PIN_wagonStepper, DIR_PIN_wagonStepper);
 
 // Create the motor shield object with its I2C address
-//Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x60); 
 Adafruit_MotorShield AFMS1 = Adafruit_MotorShield(0x60); 
 //Adafruit_MotorShield AFMS3 = Adafruit_MotorShield(0x60); 
 ///INIT MP3 AMP///
@@ -134,10 +133,6 @@ unsigned long t = 0;
 
 // Connect a stepper motor with 200 steps per revolution (1.8 degree)
 // to motor port #2 (M3 and M4)
-//Adafruit_DCMotor *Silo3Motor = AFMS1.getMotor(3);
-//Adafruit_DCMotor *Silo2Motor = AFMS1.getMotor(2);
-//Adafruit_DCMotor *Silo1Motor = AFMS1.getMotor(1);
-//Adafruit_DCMotor *CraneMotor = AFMS1.getMotor(4);
 Adafruit_DCMotor *Silo3Motor = AFMS1.getMotor(1);
 Adafruit_DCMotor *Silo2Motor = AFMS1.getMotor(4);
 Adafruit_DCMotor *Silo1Motor = AFMS1.getMotor(3);
@@ -178,13 +173,18 @@ float up_to_down_time;
 //power input
 int powerPin = 18;
 boolean powerButtonState = LOW; 
+boolean powered = false; 
 //tea_selection
 int TeaSize = 0;
 int teaChoice = 0;
 boolean power = false;
 boolean teararium_initialized = false;
+boolean turn_off = false;
 
 void setup() {
+  pinMode(powerPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(firefliesPin, OUTPUT);
   Serial.begin(9600);
   //thermoblock setup
   turn_thermoblock_off();
@@ -279,52 +279,104 @@ void setup() {
   digitalWrite(18, LOW);
 //  attachInterrupt(digitalPinToInterrupt(18), pwrUp, CHANGE); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
   //INIT
+//  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, FALLING);
   Serial.println("Arduino ready !!!");
-  initialize_teararium();
+//  run_test();
+//  infusing_timer(180);
+
 }
 
 void loop() {
-//  watchPower();
+  watchPower();
   getTeaSize();
   getTeaChoice();
   displayMenu();
-//  initialize_teararium(); 
-  if(power==true){
-    if(teararium_initialized == false){
-//      initialize_teararium();    
-      }
+  if (turn_off==true){
+    pwrDwn();
   }
+  turn_off = false;
+  
+}
+
+void test_interrupt(){
+  turn_off = true;
+  Serial.println("Interruption !");
+//    pwrUp();
+//  Serial.println("interrupt");
+//  Silo1Motor->setSpeed(0);
+//  Silo2Motor->setSpeed(0);
+//  Silo3Motor->setSpeed(0);
+//  stop_motor(1);
+//  stop_motor(2);
+//  stop_motor(3);
+//  stop_teaball();
+//  stop_pump();
+}
+
+
+void run_test(){
+  unsigned long StartTime = millis();
+    drop_teaball_down();
+  unsigned long CurrentTime = millis();
+  up_to_down_time = CurrentTime - StartTime;
+  Serial.print("Temps de descente : ");
+  Serial.println(up_to_down_time);
+  delay(1000);
+  pull_teaball_up();
+  delay(1000);
+  immerge_teaball();
+  delay(8000);
+  pull_teaball_up();
+
 }
 
 void watchPower(){
-  if(debouncePowerButton(powerButtonState) == HIGH && powerButtonState == LOW)
-  {
-    powerButtonState = HIGH;
-    power = true;
-    Serial.println("Power up");
-    pwrUp();    
+  powerButtonState = digitalRead(powerPin);
+  if (powerButtonState == HIGH){
+    if(powered==false){
+      Serial.println("Power up");
+      pwrUp();
+      powered = true;
+    }
   }
-  else if(debouncePowerButton(powerButtonState) == LOW && powerButtonState == HIGH)
-  {
-    powerButtonState = LOW;
-    power = false;
-    Serial.println("Power down");
-//    pwrDwn();
+  else{
+    if(powered==true){
+      Serial.println("Power down");
+      pwrDwn();
+      powered = false;
+    }
   }
 }
 
 void pwrUp(){
+//  playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
+  
+  analogWrite(switchPinled3, 255);
+  analogWrite(switchPinled4, 255);
+  delay(100);
+  analogWrite(switchPinled2, 255);
+  analogWrite(switchPinled5, 255);
+  delay(100);
+  analogWrite(switchPinled6, 255);
+  analogWrite(switchPinled1, 255);
+  
+  digitalWrite(ledPin, HIGH);
+  analogWrite(firefliesPin, 140);
   initialize_teararium();
+  craneStepper.disableOutputs();
 }
 
 void pwrDwn(){
-  
+//  close_teaball();
+//  pull_teaball_up();
   analogWrite(switchPinled1, 0);
   analogWrite(switchPinled2, 0);
   analogWrite(switchPinled3, 0);
   analogWrite(switchPinled4, 0);
   analogWrite(switchPinled5, 0);
   analogWrite(switchPinled6, 0);
+  digitalWrite(ledPin, LOW);
+  analogWrite(firefliesPin, 0);
 }
 
 boolean debouncePowerButton(boolean state)
@@ -347,10 +399,11 @@ void initialize_teararium(){
   analogWrite(switchPinled4, 255);
   analogWrite(switchPinled5, 255);
   analogWrite(switchPinled6, 255);
+  stop_pump();
   initialize_steppers();
   initialize_arm();
   initialize_wagon();
-  initialize_crane();
+  initialize_crane(false);
   TeaSize = 0;
   teaChoice = 0;
   teararium_initialized = true;

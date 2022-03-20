@@ -1,4 +1,4 @@
-void initialize_crane(){
+void initialize_crane(boolean tea_prep){
   Serial.println("Intializing crane");
    teaball_servo.write(closed_teaball_angle);
    init_closed_teaball();
@@ -7,13 +7,20 @@ void initialize_crane(){
    craneSwitchPinValue = digitalRead(craneSwitchPin);
    craneStepper.enableOutputs();
    while (craneSwitchPinValue != HIGH){
+    if (turn_off == true){
+        return;
+      }
      craneSwitchPinValue = digitalRead(craneSwitchPin);
      craneStepper.setSpeed(-3500);
      craneStepper.runSpeed();
     }
    CraneHomePosition = craneStepper.currentPosition();
    craneSwitchPressed();
-//   Serial.println("Crane initialized");
+   if (tea_prep == false){
+    drop_teaball_down();
+    open_teaball();
+   }
+   Serial.println("Crane initialized");
 }
 
 
@@ -32,6 +39,7 @@ void craneSwitchPressed(){
   teaball_servo.detach();
  }
 void open_teaball(){
+//  teaball_servo.write(closed_teaball_angle);
   teaball_servo.attach(8);
   for (pos = closed_teaball_angle; pos >= open_teaball_angle; pos -=1) {
     teaball_servo.write(pos);
@@ -42,6 +50,7 @@ void open_teaball(){
 
 
 void close_teaball(){   
+//  teaball_servo.write(open_teaball_angle);
   teaball_servo.attach(8);
   for (pos =open_teaball_angle; pos <= closed_teaball_angle; pos +=1) {
     teaball_servo.write(pos);
@@ -56,6 +65,10 @@ void pull_teaball_up(){
 //    CraneMotor->setSpeed(50);
   CraneMotor->setSpeed(200);
   while (TeaBallUpSwitchValue !=HIGH){
+    if (turn_off == true){
+        CraneMotor->setSpeed(0);
+        return;
+      }
     TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
     CraneMotor->run(BACKWARD);
   }
@@ -68,6 +81,10 @@ void drop_teaball_down(){
     //    CraneMotor->setSpeed(50);
   CraneMotor->setSpeed(200);
   while (TeaBallDownSwitchValue !=HIGH){
+    if (turn_off == true){
+        CraneMotor->setSpeed(0);
+        return;
+      }
     TeaBallDownSwitchValue = digitalRead(TeaBallDownSwitchPin);
     CraneMotor->run(FORWARD);
   }
@@ -84,7 +101,9 @@ void immerge_teaball(){
     // create with the default frequency 1.6KHz
   CraneMotor->setSpeed(100);
   CraneMotor->run(FORWARD);
-  delay(up_to_down_time*1.15);
+  delay(up_to_down_time*0.5);
+  CraneMotor->setSpeed(50);
+  delay(up_to_down_time*1.5);
   CraneMotor->setSpeed(0);
   }
 
@@ -100,12 +119,14 @@ void immerge_teaball(){
 
   }
   else{
-//        CraneDestination = CraneHomePosition  + 335;.
       CraneDestination = CraneHomePosition  + 460;
-
   }
   craneStepper.enableOutputs();
     while (craneStepper.currentPosition() != CraneDestination) {
+        if (turn_off == true){
+        craneStepper.disableOutputs();
+        return;
+      }
         craneStepper.runToNewPosition(CraneDestination);
     }
     Serial.println("Crane rotation completed");
