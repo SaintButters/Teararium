@@ -30,6 +30,7 @@ int arm_down_angle = 15;
 int closed_teaball_angle = 160; 
 int open_teaball_angle = 0;
 int pos=0;
+boolean teaball_open = false;
 ///PIN LED///
 int switchPinled1 = 24;              //led thé2
 int switchPinled2 = 32;              //led petite tasse
@@ -277,9 +278,9 @@ void setup() {
   //SETUP INTERRUPT POWER UP
   pinMode(18, INPUT);
   digitalWrite(18, LOW);
-//  attachInterrupt(digitalPinToInterrupt(18), pwrUp, CHANGE); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
   //INIT
-//  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, LOW);
+  init_close_teaball();
   Serial.println("Arduino ready !!!");
 //  run_test();
 //  infusing_timer(180);
@@ -291,6 +292,7 @@ void loop() {
   getTeaSize();
   getTeaChoice();
   displayMenu();
+  monitor_thermoblock(false);
   if (turn_off==true){
     pwrDwn();
   }
@@ -349,34 +351,34 @@ void watchPower(){
 }
 
 void pwrUp(){
-//  playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
-  
-  analogWrite(switchPinled3, 255);
-  analogWrite(switchPinled4, 255);
-  delay(100);
-  analogWrite(switchPinled2, 255);
-  analogWrite(switchPinled5, 255);
-  delay(100);
-  analogWrite(switchPinled6, 255);
-  analogWrite(switchPinled1, 255);
-  
-  digitalWrite(ledPin, HIGH);
-  analogWrite(firefliesPin, 140);
+//  playWithVolume(0X0F04);//play the 9th (09) song with volume 20(0x14) class
+//  playWithVolume(0X2705);//play the 9th (09) song with volume 20(0x14) class
+  //http://cactus.io/resources/toolbox/decimal-binary-octal-hexadecimal-conversion
+  //01 = trail
+  //02 = gerald
+  //03 = eredin
+  //04 = wake up
+  //05 = Aen
+  //06 = comanding
+  //07 = emhyr
+  //08 = ????
+  //09 = many meetings
+  delay(250);
+  turn_buttons_leds_on_style();
+  turn_lights_on();
+  turn_fireflies_on();
   initialize_teararium();
   craneStepper.disableOutputs();
 }
 
 void pwrDwn(){
-//  close_teaball();
-//  pull_teaball_up();
-  analogWrite(switchPinled1, 0);
-  analogWrite(switchPinled2, 0);
-  analogWrite(switchPinled3, 0);
-  analogWrite(switchPinled4, 0);
-  analogWrite(switchPinled5, 0);
-  analogWrite(switchPinled6, 0);
-  digitalWrite(ledPin, LOW);
-  analogWrite(firefliesPin, 0);
+  close_teaball();
+  pull_teaball_up();
+//  playWithVolume(0X2505);//play the 9th (09) song with volume 20(0x14) class
+  delay(500);
+  turn_buttons_leds_off();
+  turn_lights_off();
+  turn_fireflies_off();
 }
 
 boolean debouncePowerButton(boolean state)
@@ -393,12 +395,7 @@ boolean debouncePowerButton(boolean state)
 void initialize_teararium(){
 
    //playWithVolume(0X0F09);//play the 9th (09) song with volume 20(0x14) class
-  analogWrite(switchPinled1, 255);
-  analogWrite(switchPinled2, 255);
-  analogWrite(switchPinled3, 255);
-  analogWrite(switchPinled4, 255);
-  analogWrite(switchPinled5, 255);
-  analogWrite(switchPinled6, 255);
+  turn_buttons_leds_on();
   stop_pump();
   initialize_steppers();
   initialize_arm();

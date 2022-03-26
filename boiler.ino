@@ -3,11 +3,13 @@
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
  
- void monitor_thermoblock(){
-    displayTemperature(String(computed_temperature(),0));
-    Serial.print("Thermoblock temp :");
-    Serial.println(String(computed_temperature()));
-    delay(500);
+ void monitor_thermoblock(boolean display_temp){
+    if (display_temp == true){
+      displayTemperature(String(computed_temperature(),0));
+      Serial.print("Thermoblock temp :");
+      Serial.println(String(computed_temperature()));
+    }
+//    delay(500);
     if(computed_temperature()>130){
       Serial.println("Maximum temperature reached ! Abord !");
       turn_thermoblock_off();
@@ -22,10 +24,10 @@
     while (computed_temperature() < preheat_temp){
       delay(250);
       if (turn_off == true){
-        monitor_thermoblock();
+        monitor_thermoblock(true);
         return;
       }
-      monitor_thermoblock();
+      monitor_thermoblock(true);
     }
     Serial.println("Pre heating temp reached");
     turn_thermoblock_off();

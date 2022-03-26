@@ -1,0 +1,45 @@
+
+void turn_buttons_leds_on(){
+  analogWrite(switchPinled1, 255);
+  analogWrite(switchPinled2, 255);
+  analogWrite(switchPinled3, 255);
+  analogWrite(switchPinled4, 255);
+  analogWrite(switchPinled5, 255);
+  analogWrite(switchPinled6, 255);
+}
+
+void turn_buttons_leds_on_style(){
+  analogWrite(switchPinled3, 255);
+  analogWrite(switchPinled4, 255);
+  delay(100);
+  analogWrite(switchPinled2, 255);
+  analogWrite(switchPinled5, 255);
+  delay(100);
+  analogWrite(switchPinled6, 255);
+  analogWrite(switchPinled1, 255);
+}
+
+void turn_buttons_leds_off(){
+  analogWrite(switchPinled1, 0);
+  analogWrite(switchPinled2, 0);
+  analogWrite(switchPinled3, 0);
+  analogWrite(switchPinled4, 0);
+  analogWrite(switchPinled5, 0);
+  analogWrite(switchPinled6, 0);
+    }
+
+void turn_lights_on(){
+  digitalWrite(ledPin, HIGH);
+}
+
+void turn_lights_off(){
+  digitalWrite(ledPin, LOW);
+}
+
+void turn_fireflies_on(){
+  analogWrite(firefliesPin, 140);
+}
+
+void turn_fireflies_off(){
+  analogWrite(firefliesPin, 0);
+}

@@ -59,11 +59,11 @@ void pour_water(int desired_volume, bool heating, bool preheating) {
         Serial.println(" degC");
         displayPouring(String(computed_temperature(),0),String(flowrate,0),String(volume_poured,0));
       }
-      delay(1000);
+      delay(5000);
       turn_thermoblock_off();
-      delay(1000);
+      delay(5000);
       close_valve();
-      delay(1000);
+      delay(5000);
       purge_pipes();
     }
   }
@@ -71,9 +71,11 @@ void pour_water(int desired_volume, bool heating, bool preheating) {
 
 void purge_pipes(){
   open_vent_valve();
+  delay(1000);
   run_pump(150);
-  delay(500);
+  delay(1000);
   close_vent_valve();
+  delay(1000);
   stop_pump();
 }
 

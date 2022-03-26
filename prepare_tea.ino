@@ -126,6 +126,7 @@ void prepare_tea(int tea_index){
     return;
   }
   open_teaball();
+  turn_buttons_leds_on();
 }
 
 void unload_tea(int tea_index){
@@ -198,7 +199,7 @@ void getTeaSize(){
     analogWrite(switchPinled2, 0);
     analogWrite(switchPinled3, 0);
     TeaSize = 1;
-    delay(1500);
+    delay(1000);
   }
   else if (large==HIGH){
     log_info("Large cup selected", 1, 0 , 10);
@@ -206,7 +207,7 @@ void getTeaSize(){
     analogWrite(switchPinled2, 255);
     analogWrite(switchPinled3, 0);
     TeaSize = 2;
-    delay(1500);
+    delay(1000);
   }
   else if (teapot==HIGH){
     log_info("Teapot selected", 1, 0 , 10);
@@ -214,7 +215,7 @@ void getTeaSize(){
     analogWrite(switchPinled2, 0);
     analogWrite(switchPinled3, 255);
     TeaSize = 3;
-    delay(1500);
+    delay(1000);
   }
 }
 
@@ -225,11 +226,11 @@ void getTeaChoice(){
   if (tea1==HIGH){
     if (TeaSize == 0){
       log_info("Please select a Tea size :)", 1, 0 , 10);  
-      delay(2000);
+      delay(2500);
     }
     else{
     Serial.println("Preparing Tea 1");
-    prepare_tea(1);
+//    prepare_tea(1);
     }
   }
   else if (tea2==HIGH){
@@ -239,7 +240,7 @@ void getTeaChoice(){
     }
     else{
     Serial.println("Preparing Tea 2");
-    prepare_tea(2);
+//    prepare_tea(2);
     }
   }
   else if (tea3==HIGH){
@@ -250,8 +251,30 @@ void getTeaChoice(){
     }
     else{
     Serial.println("Preparing Tea 3");
-    prepare_tea(3);
-
+//    prepare_tea(3);
+      open_valve();
+      delay(1000);
+//      run_pump(220);
+//      delay(1000);
+//      stop_pump();
+      close_valve();
+//      delay(1000);
+//      purge_pipes();
+delay(5000);
+  open_vent_valve();
+  delay(5000);
+//  run_pump(150);
+  delay(5000);
+  close_vent_valve();
+//  stop_pump();
+arm_smooth_down();
+run_pump(220);
+delay(3000);
+stop_pump();
+delay(1000);
+turn_thermoblock_on();
+delay(2000);
+turn_thermoblock_off();
     }
   }
 }
