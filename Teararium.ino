@@ -40,6 +40,8 @@ int switchPinled5 = 22;              //
 int switchPinled6 = 26;   
 int ledPin=17;
 int firefliesPin=54;
+///SPEAKER PIN
+int speakerPin = 6;
 ///INIT DC MOTOR////
 #define Pin1 37  // Pump Motor A pins
 #define Pin2 39
@@ -186,6 +188,7 @@ void setup() {
   pinMode(powerPin, OUTPUT);
   pinMode(ledPin, OUTPUT);
   pinMode(firefliesPin, OUTPUT);
+  pinMode(speakerPin, OUTPUT);
   Serial.begin(9600);
   //thermoblock setup
   turn_thermoblock_off();
@@ -279,7 +282,7 @@ void setup() {
   pinMode(18, INPUT);
   digitalWrite(18, LOW);
   //INIT
-  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, LOW);
+//  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, FALLING);
   init_close_teaball();
   Serial.println("Arduino ready !!!");
 //  run_test();
@@ -288,20 +291,22 @@ void setup() {
 }
 
 void loop() {
-  watchPower();
+  is_powered();
   getTeaSize();
   getTeaChoice();
   displayMenu();
-  monitor_thermoblock(false);
-  if (turn_off==true){
-    pwrDwn();
-  }
-  turn_off = false;
+//  monitor_thermoblock(false);
+
+
+//  if (turn_off==true){
+//    pwrDwn();
+//  }
+//  turn_off = false;
   
 }
 
 void test_interrupt(){
-  turn_off = true;
+  is_powered();
   Serial.println("Interruption !");
 //    pwrUp();
 //  Serial.println("interrupt");
@@ -332,13 +337,13 @@ void run_test(){
 
 }
 
-void watchPower(){
+void is_powered(){
   powerButtonState = digitalRead(powerPin);
   if (powerButtonState == HIGH){
     if(powered==false){
       Serial.println("Power up");
-      pwrUp();
       powered = true;
+      pwrUp();
     }
   }
   else{
@@ -352,26 +357,32 @@ void watchPower(){
 
 void pwrUp(){
 //  playWithVolume(0X0F04);//play the 9th (09) song with volume 20(0x14) class
-//  playWithVolume(0X2705);//play the 9th (09) song with volume 20(0x14) class
+  turn_speaker_on();
+  playWithVolume(0X2702);//play the 9th (09) song with volume 20(0x14) class
   //http://cactus.io/resources/toolbox/decimal-binary-octal-hexadecimal-conversion
-  //01 = trail
+  //01 = grue
   //02 = gerald
-  //03 = eredin
-  //04 = wake up
-  //05 = Aen
-  //06 = comanding
-  //07 = emhyr
-  //08 = ????
-  //09 = many meetings
-  delay(250);
+   //04 = many meetings
   turn_buttons_leds_on_style();
   turn_lights_on();
   turn_fireflies_on();
+  delay(1200);
+  turn_speaker_off();
   initialize_teararium();
+  wagonStepper.disableOutputs();
   craneStepper.disableOutputs();
+  Serial.println("POWERED ON");  
 }
 
 void pwrDwn(){
+  stop_motor(1);
+  stop_motor(2);
+  stop_motor(3);
+  wagonStepper.disableOutputs();
+  craneStepper.disableOutputs();
+  stop_teaball();
+  stop_pump();
+  turn_thermoblock_off();
   close_teaball();
   pull_teaball_up();
 //  playWithVolume(0X2505);//play the 9th (09) song with volume 20(0x14) class
@@ -379,6 +390,8 @@ void pwrDwn(){
   turn_buttons_leds_off();
   turn_lights_off();
   turn_fireflies_off();
+  turn_speaker_off();
+  Serial.println("POWERED OFF");
 }
 
 boolean debouncePowerButton(boolean state)

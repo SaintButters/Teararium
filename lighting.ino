@@ -28,6 +28,24 @@ void turn_buttons_leds_off(){
   analogWrite(switchPinled6, 0);
     }
 
+void turn_buttons_leds_off_preparation(int tea_index){
+  if (tea_index==1){
+    analogWrite(switchPinled5, 0);
+    analogWrite(switchPinled6, 0);
+  }
+  else if(tea_index==2){
+    analogWrite(switchPinled4, 0);
+    analogWrite(switchPinled6, 0);
+  }
+  else if (tea_index==3){
+    analogWrite(switchPinled4, 0);
+    analogWrite(switchPinled5, 0);
+  }
+  else if (tea_index==0){
+    analogWrite(switchPinled4, 0);
+  }
+}    
+
 void turn_lights_on(){
   digitalWrite(ledPin, HIGH);
 }

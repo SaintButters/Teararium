@@ -2,133 +2,139 @@
 
 void prepare_tea(int tea_index){
   log_info("Starting Tea preparation", 1, 0 , 10);  
-  if (turn_off == true){
+  turn_buttons_leds_off_preparation(tea_index);
+  if (powered==false){
     return;
   }
   initialize_arm();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   initialize_wagon();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   initialize_crane(true);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   pull_teaball_up();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   displace_wagon(tea_index);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   unload_tea(tea_index);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   displace_wagon(1);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   rotate_crane(2);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   unsigned long StartTime = millis();
     drop_teaball_down();
-    if (turn_off == true){
+    if (powered==false){
     return;
   }
   unsigned long CurrentTime = millis();
   up_to_down_time = CurrentTime - StartTime;
   Serial.print("Temps de descente : ");
   Serial.println(up_to_down_time);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   open_teaball();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   delay(2000); // test open teabull
   displace_wagon(4);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   activate_shovel();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   displace_wagon(0);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   close_teaball();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   pull_teaball_up();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   arm_smooth_down();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   pour_water(325, true, true);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   delay(1000);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   arm_smooth_up();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   delay(1000);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   rotate_crane(1);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   immerge_teaball();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   infusing_timer(180);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   pull_teaball_up();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   delay(10000);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   rotate_crane(0);
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   drop_teaball_down();
-  if (turn_off == true){
+  if (powered==false){
     return;
   }
   open_teaball();
   turn_buttons_leds_on();
 }
 
+void prepare_last_tea(){
+  turn_buttons_leds_off_preparation(0);
+  Serial.println("Ho, hello !");
+  delay(2500);
+}
 void unload_tea(int tea_index){
 
   float desired_tea_weight = 2;
@@ -141,7 +147,7 @@ void unload_tea(int tea_index){
   init_scale();
   initial_mesure = compute_weight();
   while (tea_weight < desired_tea_weight + initial_mesure) {
-    if (turn_off == true){
+    if (powered==false){
         stop_motor(tea_index);
         return;
       }
@@ -168,7 +174,7 @@ void infusing_timer(int seconds){
   int timer = seconds;
   int wiggle_timer = 0;
   while (timer != -1){
-      if (turn_off == true){
+      if (powered==false){
         return;
       }
       display_timer(timer);
@@ -223,58 +229,89 @@ void getTeaChoice(){
   int tea1 = digitalRead(Tea1switchPin);
   int tea2 = digitalRead(Tea2switchPin);
   int tea3 = digitalRead(Tea3switchPin);
+  boolean reuse_tea = false;
+  unsigned long starttime;
+  unsigned long endtime;
   if (tea1==HIGH){
     if (TeaSize == 0){
-      log_info("Please select a Tea size :)", 1, 0 , 10);  
+      log_info("Please select a Tea size)", 1, 0 , 10);  
       delay(2500);
     }
     else{
-    Serial.println("Preparing Tea 1");
+      Serial.println("Preparing Tea 1");
+      delay(2500);
 //    prepare_tea(1);
+      }
     }
-  }
   else if (tea2==HIGH){
     if (TeaSize == 0){
-      log_info("Please select a Tea size :)", 1, 0 , 10);  
+      log_info("Please select a Tea size", 1, 0 , 10);  
       delay(2500);
     }
     else{
-    Serial.println("Preparing Tea 2");
-//    prepare_tea(2);
+        starttime = millis();
+        endtime = starttime;
+        while ((endtime - starttime) <=750){
+          tea3 = digitalRead(Tea3switchPin);
+          if (tea3==HIGH){
+            reuse_tea = true;
+            break;
+          }
+          endtime = millis();
+        }
+        if(reuse_tea==false){
+          Serial.println("Preparing Tea 2");
+          //        prepare_tea(2);
+        }
+        else{
+          Serial.println("Re-using last teaball");
+          prepare_last_tea();
+        }
+        delay(2500);
     }
   }
   else if (tea3==HIGH){
-    
     if (TeaSize == 0){
-      log_info("Please select a Tea size :)", 1, 0 , 10);  
+      log_info("Please select a Tea size", 1, 0 , 10);  
       delay(2500);
     }
     else{
-    Serial.println("Preparing Tea 3");
-//    prepare_tea(3);
-      open_valve();
-      delay(1000);
-//      run_pump(220);
+      starttime = millis();
+        endtime = starttime;
+        while((endtime - starttime) <=750){
+          tea2 = digitalRead(Tea2switchPin);
+          if (tea2==HIGH){
+            reuse_tea = true;
+            break;
+          }
+          endtime = millis();
+        }
+        if(reuse_tea==false){
+          Serial.println("Preparing Tea 3");
+          //    prepare_tea(3);
+      }
+
+
+//      open_valve();
 //      delay(1000);
-//      stop_pump();
-      close_valve();
-//      delay(1000);
-//      purge_pipes();
-delay(5000);
-  open_vent_valve();
-  delay(5000);
-//  run_pump(150);
-  delay(5000);
-  close_vent_valve();
-//  stop_pump();
-arm_smooth_down();
-run_pump(220);
-delay(3000);
-stop_pump();
-delay(1000);
-turn_thermoblock_on();
-delay(2000);
-turn_thermoblock_off();
+//
+//      close_valve();
+//
+//delay(5000);
+//  open_vent_valve();
+//  delay(5000);
+////  run_pump(150);
+//  delay(5000);
+//  close_vent_valve();
+////  stop_pump();
+//arm_smooth_down();
+//run_pump(220);
+//delay(3000);
+//stop_pump();
+//delay(1000);
+//turn_thermoblock_on();
+//delay(2000);
+//turn_thermoblock_off();
     }
   }
 }

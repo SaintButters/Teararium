@@ -41,7 +41,7 @@ void pour_water(int desired_volume, bool heating, bool preheating) {
         turn_thermoblock_on();
       }
       while (volume_poured < desired_volume) {
-        if (turn_off == true){
+        if (powered==false){
           turn_thermoblock_off();
           return;
         }

@@ -6,9 +6,11 @@ void setVolume(int8_t vol)
 }
 void playWithVolume(int16_t dat)
 {
-  
+  turn_speaker_on();
   Serial.println("Playing music");
   mp3_6bytes(CMD_PLAY_W_VOL, dat);
+  
+  
 //  digitalWrite(49, LOW);
 }
 
@@ -96,4 +98,17 @@ void sendBytes(uint8_t nbytes)
   {
     myMP3.write(Send_buf[i]) ;
   }
+//  turn_speaker_off();
+}
+
+void turn_speaker_on()
+{
+  digitalWrite(speakerPin, HIGH);
+  Serial.println("Speaker turned on");
+}
+
+void turn_speaker_off()
+{
+  digitalWrite(speakerPin, LOW);
+  Serial.println("Speaker turned off");
 }

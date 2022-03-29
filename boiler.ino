@@ -23,7 +23,7 @@
     delay(250);
     while (computed_temperature() < preheat_temp){
       delay(250);
-      if (turn_off == true){
+      if (powered==false){
         monitor_thermoblock(true);
         return;
       }

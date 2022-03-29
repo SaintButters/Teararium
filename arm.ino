@@ -20,7 +20,7 @@ void initialize_arm(){
 void arm_smooth_down(){
     arm_servo.attach(9);
     for (pos = 180; pos >=135; pos -=1) {
-          if (turn_off == true){
+          if (powered==false){
             return;
           }
           arm_servo.write(pos);
@@ -33,7 +33,7 @@ void arm_smooth_down(){
 void arm_smooth_up (){
     arm_servo.attach(9);
     for (pos = 135; pos <=180; pos +=1) {
-          if (turn_off == true){
+          if (powered==false){
             return;
           }
           arm_servo.write(pos);
