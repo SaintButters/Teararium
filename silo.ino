@@ -1,4 +1,9 @@
 #include <Adafruit_MotorShield.h>
+
+boolean silo1_empty = false;
+boolean silo2_empty = false;
+boolean silo3_empty = false;
+
 void run_motor(int tea_index, int sense) {
   if(tea_index == 1){
     Serial.println("Activating silo motor 1");
@@ -48,4 +53,26 @@ void stop_motor(int tea_index) {
     }
 }
 
-  
+void declare_empty_silo(int silo_nb){
+    if (silo_nb==1){
+      silo1_empty = true;
+    }
+    else if (silo_nb==2){
+      silo2_empty = true;
+    }
+    else if (silo_nb==3){
+      silo3_empty = true;
+    }
+}
+
+void declare_full_silo(int silo_nb){
+    if (silo_nb==1){
+      silo1_empty = false;
+    }
+    else if (silo_nb==2){
+      silo2_empty = false;
+    }
+    else if (silo_nb==3){
+      silo3_empty = false;
+    }
+}

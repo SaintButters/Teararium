@@ -16,7 +16,7 @@ void stop_pump() {
   PumpMotorState = 0;
 }
 
-void pour_water(int desired_volume, bool heating, bool preheating) {
+void pour_water(int tea_size, bool heating, bool preheating) {
    Serial.println("Start pouring process");
   pouring_time = 0;
   volume_poured = 0;
@@ -40,7 +40,7 @@ void pour_water(int desired_volume, bool heating, bool preheating) {
       if (heating == true){
         turn_thermoblock_on();
       }
-      while (volume_poured < desired_volume) {
+      while (volume_poured < waterVolume[tea_size]) {
         if (powered==false){
           turn_thermoblock_off();
           return;

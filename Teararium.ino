@@ -163,7 +163,6 @@ volatile int flow_frequency; // Measures flow sensor pulses
 unsigned int L_per_hour; // Computed litres/hour
 unsigned int mL_per_sec; // Computed mL/sec
 unsigned char flowsensor = 2; //pin 18 is an interruptable pin, raises event to interrupt(5) : cf doc interrupt Arduino Mega 2560
-int desired_volume; //mL
 float pouring_time;
 float volume_poured;
 float step_volume_poured;
@@ -193,12 +192,7 @@ void setup() {
   //thermoblock setup
   turn_thermoblock_off();
   ///Led Setup///
-  analogWrite(switchPinled1, 0);
-  analogWrite(switchPinled2, 0);
-  analogWrite(switchPinled3, 0);
-  analogWrite(switchPinled4, 0);
-  analogWrite(switchPinled5, 0);
-  analogWrite(switchPinled6, 0);
+  turn_buttons_leds_off();
   //motors setup
   AFMS1.begin();
   stop_motor(1);
@@ -216,12 +210,11 @@ void setup() {
   pinMode(smallCupSwitchPin, INPUT);
   pinMode(largeCupSwitchPin, INPUT);
   pinMode(teapotSwitchPin, INPUT);
-  pinMode(craneSwitchPin, INPUT);    // Set the switch pin as input
+  pinMode(craneSwitchPin, INPUT);    
   pinMode(TeaBallDownSwitchPin, INPUT);
   pinMode(TeaBallUpSwitchPin, INPUT);
   ///Crane setup///
   Serial.println("Initializing motor Feather 1");
-  
   Serial.println("motor Feather 1 initialized");
   ///Servos setup///
   //SETUP RELAY
@@ -234,17 +227,17 @@ void setup() {
   pinMode(ThermoblockRelayPin2, OUTPUT);
   digitalWrite(ThermoblockRelayPin2, HIGH);
   //SETUP SCALE
-   float calibrationValue; // calibration value
+  float calibrationValue; // calibration value
   calibrationValue = -1710; // tested value 
   LoadCell.begin();
   unsigned long stabilizingtime = 2000; // tare preciscion can be improved by adding a few seconds of stabilizing time
-  boolean _tare = true; //set this to false if you don't want tare to be performed in the next step
+  boolean _tare = true;
   LoadCell.start(stabilizingtime, _tare);
   if (LoadCell.getTareTimeoutFlag()) {
     Serial.println("Timeout, check MCU>HX711 wiring and pin designations");
   }
   else {
-    LoadCell.setCalFactor(calibrationValue); // set calibration factor (float)
+    LoadCell.setCalFactor(calibrationValue);
     Serial.println("Load cell startup is complete");
   }
   while (!LoadCell.update());
@@ -267,7 +260,7 @@ void setup() {
   //SETUP FLOW SENSOR
   pinMode(flowsensor, INPUT);
   digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
-  attachInterrupt(digitalPinToInterrupt(flowsensor), flow, RISING); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event
+  attachInterrupt(digitalPinToInterrupt(flowsensor), flow, RISING); // Setup Interrupt // interrupt(5) corresponds to pin 18 raising event for arduino Mega 2560
   sei(); // Enable interrupts
   currentTime = millis();
   cloopTime = currentTime;
@@ -286,8 +279,6 @@ void setup() {
   init_close_teaball();
   Serial.println("Arduino ready !!!");
 //  run_test();
-//  infusing_timer(180);
-
 }
 
 void loop() {
@@ -418,6 +409,4 @@ void initialize_teararium(){
   teaChoice = 0;
   teararium_initialized = true;
   log_info("Teararium initialized !", 1, 0 , 10);
-
-
 }
