@@ -1,5 +1,6 @@
 
 void turn_buttons_leds_on(){
+  Serial.println("Turning buttons leds on");
   analogWrite(switchPinled1, 255);
   analogWrite(switchPinled2, 255);
   analogWrite(switchPinled3, 255);
@@ -9,6 +10,7 @@ void turn_buttons_leds_on(){
 }
 
 void turn_buttons_leds_on_style(){
+  Serial.println("Turning buttons leds on with style");
   analogWrite(switchPinled3, 255);
   analogWrite(switchPinled4, 255);
   delay(100);
@@ -20,6 +22,7 @@ void turn_buttons_leds_on_style(){
 }
 
 void turn_buttons_leds_off(){
+  Serial.println("Turning buttons leds off");
   analogWrite(switchPinled1, 0);
   analogWrite(switchPinled2, 0);
   analogWrite(switchPinled3, 0);

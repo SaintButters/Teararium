@@ -1,4 +1,4 @@
-void initialize_crane(boolean tea_prep){
+void initialize_crane(boolean pull_up){
    Serial.println("Intializing crane");
    close_teaball();
    pull_teaball_up();
@@ -15,7 +15,7 @@ void initialize_crane(boolean tea_prep){
     }
    CraneHomePosition = craneStepper.currentPosition();
    craneSwitchPressed();
-   if (tea_prep == false){
+   if (pull_up == false){
     drop_teaball_down();
     open_teaball();
    }
@@ -107,8 +107,8 @@ void immerge_teaball(){
   CraneMotor->setSpeed(100);
   CraneMotor->run(FORWARD);
   delay(up_to_down_time*0.5);
-  CraneMotor->setSpeed(50);
-  delay(up_to_down_time*1.5);
+  CraneMotor->setSpeed(30);
+  delay(up_to_down_time*2.5);
   CraneMotor->setSpeed(0);
   }
 
@@ -121,7 +121,7 @@ CraneDestination = CraneHomePosition + 35;
     
   }
   else if (step_index==1){
-    CraneDestination = CraneHomePosition + 255;
+    CraneDestination = CraneHomePosition + 280;
 
   }
   else{

@@ -17,10 +17,11 @@ void stop_pump() {
 }
 
 void pour_water(int tea_size, bool heating, bool preheating) {
-   Serial.println("Start pouring process");
+  Serial.println("Start pouring process");
   pouring_time = 0;
   volume_poured = 0;
-  // turn LED on:  
+  enough_water = false;
+  int abonormal_flowrate_count = 0;
   Serial.print("temp = ");
   Serial.print(String(computed_temperature()));
   Serial.println(" degC");
@@ -31,11 +32,11 @@ void pour_water(int tea_size, bool heating, bool preheating) {
       if (preheating == true){
         preHeat_thermoblock();
       }
-      delay(500);
+      delay(250);
       close_vent_valve();
-      delay(1000);
+      delay(250);
       open_valve();
-      delay(1000);
+      delay(250);
       run_pump(220);
       if (heating == true){
         turn_thermoblock_on();
@@ -45,8 +46,9 @@ void pour_water(int tea_size, bool heating, bool preheating) {
           turn_thermoblock_off();
           return;
         }
+        monitor_thermoblock(false);
         flowrate = measure_flowrate();
-        step_volume_poured = 0.180 * flowrate;
+        step_volume_poured = 0.165 * flowrate; // tested value
         volume_poured = step_volume_poured + volume_poured;
         Serial.print("Debit = ");
         Serial.print(mL_per_sec); // Print litres/hour
@@ -58,31 +60,47 @@ void pour_water(int tea_size, bool heating, bool preheating) {
         Serial.print(String(computed_temperature()));
         Serial.println(" degC");
         displayPouring(String(computed_temperature(),0),String(flowrate,0),String(volume_poured,0));
+        if (flowrate < 5){
+          abonormal_flowrate_count = abonormal_flowrate_count + 1;
+        }
+        else{
+          abonormal_flowrate_count = 0;
+        }
+        if (abonormal_flowrate_count > 5){
+          Serial.print("Water flow too low. Filling ended");
+          break;
+        }
       }
-      delay(5000);
+      delay(250);
       turn_thermoblock_off();
-      delay(5000);
+      delay(250);
       close_valve();
-      delay(5000);
-      purge_pipes();
+      delay(250);
+//      stop_pump();
+      if (volume_poured > 0.66 * waterVolume[tea_size]){
+          enough_water = true;
+          purge_pipes();
+        }
+       else{
+         stop_pump();
+       }
     }
   }
 }
 
 void purge_pipes(){
+  run_pump(100);
+  delay(250);
   open_vent_valve();
-  delay(1000);
-  run_pump(150);
-  delay(1000);
+  delay(2000);
   close_vent_valve();
-  delay(1000);
+  delay(250);
   stop_pump();
 }
 
 void open_valve(){
   Serial.println("Opening valve");
-  digitalWrite(solenoidRelayPin, LOW
-  );
+  digitalWrite(solenoidRelayPin, LOW);
 }
 void close_valve(){
   Serial.println("Closing valve");
@@ -91,8 +109,7 @@ void close_valve(){
 
 void open_vent_valve(){
   Serial.println("Opening vent valve");
-  digitalWrite(solenoid2RelayPin, LOW
-  );
+  digitalWrite(solenoid2RelayPin, LOW);
 }
 void close_vent_valve(){
   Serial.println("Closing vent valve");

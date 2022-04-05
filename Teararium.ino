@@ -171,7 +171,7 @@ float flowrate;
 unsigned long currentTime;
 unsigned long cloopTime;
 //Crane inputs
-float up_to_down_time;
+float up_to_down_time = 3200;
 //power input
 int powerPin = 18;
 boolean powerButtonState = LOW; 
@@ -311,22 +311,6 @@ void test_interrupt(){
 //  stop_pump();
 }
 
-
-void run_test(){
-  unsigned long StartTime = millis();
-    drop_teaball_down();
-  unsigned long CurrentTime = millis();
-  up_to_down_time = CurrentTime - StartTime;
-  Serial.print("Temps de descente : ");
-  Serial.println(up_to_down_time);
-  delay(1000);
-  pull_teaball_up();
-  delay(1000);
-  immerge_teaball();
-  delay(8000);
-  pull_teaball_up();
-
-}
 
 void is_powered(){
   powerButtonState = digitalRead(powerPin);

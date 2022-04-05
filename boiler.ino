@@ -1,5 +1,5 @@
 // int preheat_temp = 95;
- int preheat_temp = 55;
+ int preheat_temp = 85;
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
  
@@ -24,6 +24,7 @@
     while (computed_temperature() < preheat_temp){
       delay(250);
       if (powered==false){
+        turn_thermoblock_off();
         monitor_thermoblock(true);
         return;
       }
