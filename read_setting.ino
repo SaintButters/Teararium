@@ -23,41 +23,56 @@ int line_counter = 0;
 String line_buffer;
 int setting_value;
 int line;
+
+void load_all_settings(){
+  Serial.println("Loading settings");
+  temp1 = read_setting(tea1_temp_line);
+  Serial.println(temp1);
+  temp2 = read_setting(tea2_temp_line);
+  Serial.println(temp1);
+  temp3 = read_setting(tea3_temp_line);
+  Serial.println(temp1);
+  time1 = read_setting(tea1_infusion_time_line);
+  time2 = read_setting(tea2_infusion_time_line);
+  time3 = read_setting(tea3_infusion_time_line);
+//  infusingTemp[4] = {0, temp1, temp2, temp3};
+  Serial.println("Settings loaded");
+}
+
 int read_setting(int setting_index){
-
-setting_value = 0;
-line_counter = 0;
-while (!Serial) {
-; // wait for serial port to connect. Needed for native USB port only
-}
-Serial.print("Initializing SD card...");
-if (!SD.begin(53)) {
-Serial.println("initialization failed!");
-while (1);
-}
-Serial.println("initialization done.");
-// open the file for reading:
-myFile = SD.open("settings.txt");
-if (myFile) {
-// read from the file until there's nothing else in it:
-while (myFile.available()) {
-    line_buffer = myFile.readStringUntil(';');
-    line_counter +=1;
-    if (line_counter==setting_index){
-    setting_value=line_buffer.toInt();
-    }
-//    Serial.write(myFile.read());
-    //do some action here
+  setting_value = 0;
+  line_counter = 0;
+  while (!Serial) {
+  ; // wait for serial port to connect. Needed for native USB port only
   }
-  myFile.close();
-}
-// close the file:
-
-else {
-// if the file didn't open, print an error:
-Serial.println("error opening settings.txt");
-}
-return setting_value;
+  Serial.print("Initializing SD card...");
+  if (!SD.begin(53)) {
+  Serial.println("initialization failed!");
+  while (1);
+  }
+  Serial.println("initialization done.");
+  // open the file for reading:
+  myFile = SD.open("settings.txt");
+  if (myFile) {
+  // read from the file until there's nothing else in it:
+  while (myFile.available()) {
+      line_buffer = myFile.readStringUntil(';');
+      line_counter +=1;
+      if (line_counter==setting_index){
+      setting_value=line_buffer.toInt();
+      }
+  //    Serial.write(myFile.read());
+      //do some action here
+    }
+    myFile.close();
+  }
+  // close the file:
+  
+  else {
+  // if the file didn't open, print an error:
+  Serial.println("error opening settings.txt");
+  }
+  return int(setting_value);
 }
 
 

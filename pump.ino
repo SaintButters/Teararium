@@ -16,7 +16,7 @@ void stop_pump() {
   PumpMotorState = 0;
 }
 
-void pour_water(int tea_size, bool heating, bool preheating) {
+void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
   Serial.println("Start pouring process");
   pouring_time = 0;
   volume_poured = 0;
@@ -30,7 +30,7 @@ void pour_water(int tea_size, bool heating, bool preheating) {
   if (130<arm_servo.read()<140){
     if (PumpMotorState == 0) {
       if (preheating == true){
-        preHeat_thermoblock();
+        preHeat_thermoblock(tea_index);
       }
       delay(250);
       close_vent_valve();
@@ -89,12 +89,12 @@ void pour_water(int tea_size, bool heating, bool preheating) {
 }
 
 void purge_pipes(){
-  run_pump(100);
+  run_pump(150);
   delay(250);
   open_vent_valve();
-  delay(2000);
+  delay(1250);
   close_vent_valve();
-  delay(250);
+  delay(500);
   stop_pump();
 }
 

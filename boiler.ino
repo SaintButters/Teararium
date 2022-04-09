@@ -1,7 +1,6 @@
-// int preheat_temp = 95;
- int preheat_temp = 85;
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
+ int infusingTemp[4] = {80,temp1,temp2,temp3};
  
  void monitor_thermoblock(boolean display_temp){
     if (display_temp == true){
@@ -9,7 +8,6 @@
       Serial.print("Thermoblock temp :");
       Serial.println(String(computed_temperature()));
     }
-//    delay(500);
     if(computed_temperature()>130){
       Serial.println("Maximum temperature reached ! Abord !");
       turn_thermoblock_off();
@@ -17,11 +15,11 @@
   }
   
 
-  void preHeat_thermoblock(){
+  void preHeat_thermoblock(int tea_index){
     Serial.println("Pre heating thermoblock");
     turn_thermoblock_on();
     delay(250);
-    while (computed_temperature() < preheat_temp){
+    while (computed_temperature() < infusingTemp[tea_index]){
       delay(250);
       if (powered==false){
         turn_thermoblock_off();
@@ -34,7 +32,7 @@
     turn_thermoblock_off();
   }
   
-  void turn_thermoblock_on(){
+ void turn_thermoblock_on(){
     
     Serial.println("Turning thermoblock on");
     ThermoblockRelay1Value = digitalRead(ThermoblockRelayPin1);

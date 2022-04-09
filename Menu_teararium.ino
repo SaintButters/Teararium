@@ -48,15 +48,14 @@ int selectedOnOff = 0;
 boolean sound = true;
 boolean backlight = true;
 int contrast=60;
+int volume = 50;
+int ambiance = 50;
 int temp1 = 85;
 int temp2 = 85;
 int temp3 = 85;
 int time1 = 5;
 int time2 = 5;
 int time3 = 5;
-int volume = 50;
-int ambiance = 50;
-
 boolean up = false;
 boolean down = false;
 boolean middle = false;
@@ -332,8 +331,6 @@ void displayMenu() {
        }
      }
      if (teaItem==3 or soundItem==3 or lightingItem ==3){
-            Serial.print("here");
-
        if (page == 2) {
         page = 1;
         frame = 1;
@@ -341,11 +338,10 @@ void displayMenu() {
         teaItem = 1;
         soundItem = 1;
         lightingItem = 1;
-        Serial.print("go back to page 1 dawg");
+        Serial.print("go back to page 1");
        }
       }
      if (page ==3 && lastMenu ==true){
-    Serial.print("kk");
     page = 2;
     update_setting(menuItem, teaItem, soundItem, lightingItem);
     lastMenu = false;
@@ -461,7 +457,7 @@ void displayMenu() {
     if(menuItem<=3)
     {   
       display.print("Tea ");
-      display.print(menuItem);
+      display.println(menuItem);
       if(teaItem ==1){
       displayMenuItem(teaItem1, 15,true);
       displayMenuItem(teaItem2, 25,false);

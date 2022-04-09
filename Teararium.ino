@@ -274,6 +274,8 @@ void setup() {
   //SETUP INTERRUPT POWER UP
   pinMode(18, INPUT);
   digitalWrite(18, LOW);
+  //Load settings
+  load_all_settings();
   //INIT
 //  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, FALLING);
   init_close_teaball();
@@ -335,9 +337,6 @@ void pwrUp(){
   turn_speaker_on();
   playWithVolume(0X2702);//play the 9th (09) song with volume 20(0x14) class
   //http://cactus.io/resources/toolbox/decimal-binary-octal-hexadecimal-conversion
-  //01 = grue
-  //02 = gerald
-   //04 = many meetings
   turn_buttons_leds_on_style();
   turn_lights_on();
   turn_fireflies_on();
