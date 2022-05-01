@@ -27,7 +27,7 @@ int CraneHomePosition;
 int CraneDestination = 0;
 int arm_up_angle = 70;   
 int arm_down_angle = 15; 
-int closed_teaball_angle = 160; 
+int closed_teaball_angle = 180; 
 int open_teaball_angle = 0;
 int pos=0;
 boolean teaball_open = false;
@@ -341,7 +341,7 @@ void pwrUp(){
   turn_lights_on();
   turn_fireflies_on();
   delay(1200);
-  turn_speaker_off();
+//  turn_speaker_off();
   initialize_teararium();
   wagonStepper.disableOutputs();
   craneStepper.disableOutputs();

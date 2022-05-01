@@ -1,7 +1,7 @@
 float infusingTime[4] = {320, time1*60, time2*60, time3*60};
 float infusingFactor[4] = {0, 1, 1, 1.5};
 float waterVolume[4] = {0, 120, 200, 500};
-float teaWeight[4] = {0, 1.5, 2, 2.5};
+float teaWeight[4] = {0, 1.5, 1.75, 2.5};
 boolean enough_tea = false;
 boolean enough_water = false;
 
@@ -67,17 +67,17 @@ void prepare_previous_tea(int tea_index, int tea_size){
 
 void load_tea(int tea_index, int tea_size){
   displace_wagon(tea_index);
-  if (powered==false){
-    return;
-  }
+//  if (powered==false){
+//    return;
+//  }
   unload_tea(tea_index, tea_size);
-  if (powered==false){
-    return;
-  }
+//  if (powered==false){
+//    return;
+//  }
   displace_wagon(1);
-  if (enough_tea == false) {
-    return;
-  }
+//  if (enough_tea == false) {
+//    return;
+//  }
   if (powered==false){
     return;
   }
@@ -85,15 +85,10 @@ void load_tea(int tea_index, int tea_size){
   if (powered==false){
     return;
   }
-//  unsigned long StartTime = millis();
   drop_teaball_down();
   if (powered==false){
   return;
   }
-//  unsigned long CurrentTime = millis();
-//  up_to_down_time = CurrentTime - StartTime;
-//  Serial.print("Temps de descente : ");
-//  Serial.println(up_to_down_time);
   if (powered==false){
     return;
   }
@@ -101,7 +96,7 @@ void load_tea(int tea_index, int tea_size){
   if (powered==false){
     return;
   }
-  delay(500); // test open teabull
+  delay(500); 
   displace_wagon(4);
   if (powered==false){
     return;
@@ -187,7 +182,6 @@ void unload_tea(int tea_index, int tea_size){
   int timer =0;
   int roll_timer =0;
   int sense =0;
-  float counter = 0;
   enough_tea = false;
   init_scale();
   initial_mesure = compute_weight();
@@ -196,8 +190,8 @@ void unload_tea(int tea_index, int tea_size){
   unsigned long StartTime = millis();
   Serial.print("StartTime :");
   Serial.println(StartTime);
-//  while (tea_weight < desired_tea_weight + initial_mesure) {
-  while (unloadingTime < 4850*infusingFactor[tea_size]) {
+  while (tea_weight < desired_tea_weight + initial_mesure) {
+//  while (unloadingTime < 4850*infusingFactor[tea_size]) {
     Serial.print("CurrentTime :");
     Serial.println(CurrentTime);
     Serial.print("unloadingTime :");
@@ -208,20 +202,20 @@ void unload_tea(int tea_index, int tea_size){
         stop_motor(tea_index);
         return;
       }
-//    if (tea_weight > 10 or tea_weight <-10){
-//      Serial.println("Measure error. Abord");
-//      stop_motor(tea_index);
-//      return;
-//    }
+    if (tea_weight > 10 or tea_weight <-10){
+      Serial.println("Measure error. Abord");
+      stop_motor(tea_index);
+      return;
+    }
     timer = timer + 1;
     roll_timer = roll_timer +1;
     tea_weight = compute_weight();
     delay(250); 
-//    if (counter == 15){
-//        Serial.println("Max loading time exceeded. Loading ended");
-//        stop_motor(tea_index);
-//        break;
-//      }
+    if (unloadingTime > 15000){
+        Serial.println("Max loading time exceeded. Loading ended");
+        stop_motor(tea_index);
+        break;
+      }
     if (timer == 4){
       if (sense == 0){
         sense = 1;
@@ -231,15 +225,12 @@ void unload_tea(int tea_index, int tea_size){
       }
       run_motor(tea_index, sense);
       timer = 0;
-      Serial.println(counter);
-      counter = counter+1;
     }
   }
   stop_motor(tea_index);
-//  if (tea_weight > 0.66 * desired_tea_weight){
-//    enough_tea = true;
-//  }
-  enough_tea = true;
+  if (tea_weight > 0.66 * desired_tea_weight){
+    enough_tea = true;
+    }
   }
 
 void infusing_timer(int seconds){

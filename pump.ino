@@ -79,10 +79,12 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
 //      stop_pump();
       if (volume_poured > 0.66 * waterVolume[tea_size]){
           enough_water = true;
-          purge_pipes();
+          stop_pump();
+//          purge_pipes();
         }
        else{
          stop_pump();
+         enough_water = false;
        }
     }
   }

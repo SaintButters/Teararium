@@ -13,6 +13,7 @@ void initialize_crane(boolean pull_up){
      craneStepper.setSpeed(-3500);
      craneStepper.runSpeed();
     }
+   delay(500);
    CraneHomePosition = craneStepper.currentPosition();
    craneSwitchPressed();
    if (pull_up == false){
@@ -108,7 +109,7 @@ void immerge_teaball(){
   CraneMotor->run(FORWARD);
   delay(up_to_down_time*0.5);
   CraneMotor->setSpeed(30);
-  delay(up_to_down_time*2.5);
+  delay(up_to_down_time*2.7);
   CraneMotor->setSpeed(0);
   }
 
@@ -121,7 +122,7 @@ CraneDestination = CraneHomePosition + 35;
     
   }
   else if (step_index==1){
-    CraneDestination = CraneHomePosition + 280;
+    CraneDestination = CraneHomePosition + 275;
 
   }
   else{
