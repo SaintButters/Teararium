@@ -65,6 +65,82 @@ void prepare_previous_tea(int tea_index, int tea_size){
   turn_buttons_leds_on();
 }
 
+
+void test_prepare_tea(int tea_index, int tea_size){
+  float infusingTime[4] = {320, time1*60, time2*60, time3*60};
+  int infusingTemp[4] = {0, temp1, temp2, temp3};
+  Serial.println(infusingTime[tea_index]);
+  Serial.println(infusingFactor[tea_size]);
+  Serial.println(infusingTemp[tea_index]);
+  Serial.println(waterVolume[tea_size]);
+  Serial.println(teaWeight[tea_size]);
+  log_info("Starting Tea preparation", 1, 0 , 10);  
+  turn_buttons_leds_off_preparation(tea_index);
+  initialize_arm();
+  initialize_wagon();
+  initialize_crane(true);
+  rotate_crane(2);
+  if (powered==false){
+    return;
+  }
+  drop_teaball_down();
+  if (powered==false){
+  return;
+  }
+  if (powered==false){
+    return;
+  }
+  open_teaball();
+  if (powered==false){
+    return;
+  }
+  delay(500); 
+  displace_wagon(4);
+  if (powered==false){
+    return;
+  }
+  activate_shovel();
+  if (powered==false){
+    return;
+  }
+  displace_wagon(0);
+  if (powered==false){
+    return;
+  }
+  close_teaball();
+  if (powered==false){
+    return;
+  }
+  pull_teaball_up();
+  if (powered==false){
+    return;
+  }
+  rotate_crane(1);
+  if (powered==false){
+    return;
+  }
+  immerge_teaball();
+  delay(4000);
+  pull_teaball_up();
+  if (powered==false){
+    return;
+  }
+  if (powered==false){
+    return;
+  }
+  rotate_crane(0);
+  if (powered==false){
+    return;
+  }
+  drop_teaball_down();
+  if (powered==false){
+    return;
+  }
+  open_teaball();
+  turn_buttons_leds_on();
+  
+}
+
 void load_tea(int tea_index, int tea_size){
   displace_wagon(tea_index);
 //  if (powered==false){
