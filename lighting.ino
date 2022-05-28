@@ -47,6 +47,9 @@ void turn_buttons_leds_off_preparation(int tea_index){
   else if (tea_index==0){
     analogWrite(switchPinled4, 0);
   }
+   else if (tea_index==4){
+    analogWrite(switchPinled5, 0);
+  }
 }    
 
 void turn_lights_on(){

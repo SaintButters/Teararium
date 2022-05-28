@@ -299,8 +299,9 @@ void loop() {
 }
 
 void test_interrupt(){
-  is_powered();
   Serial.println("Interruption !");
+  is_powered();
+  
 //    pwrUp();
 //  Serial.println("interrupt");
 //  Silo1Motor->setSpeed(0);
@@ -335,7 +336,7 @@ void is_powered(){
 void pwrUp(){
 //  playWithVolume(0X0F04);//play the 9th (09) song with volume 20(0x14) class
   turn_speaker_on();
-  playWithVolume(0X2702);//play the 9th (09) song with volume 20(0x14) class
+//  playWithVolume(0X2702);//play the 9th (09) song with volume 20(0x14) class
   //http://cactus.io/resources/toolbox/decimal-binary-octal-hexadecimal-conversion
   turn_buttons_leds_on_style();
   turn_lights_on();
@@ -349,12 +350,12 @@ void pwrUp(){
 }
 
 void pwrDwn(){
+  stop_teaball();
   stop_motor(1);
   stop_motor(2);
   stop_motor(3);
   wagonStepper.disableOutputs();
   craneStepper.disableOutputs();
-  stop_teaball();
   stop_pump();
   turn_thermoblock_off();
   close_teaball();

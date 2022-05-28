@@ -36,6 +36,7 @@ void prepare_tea(int tea_index, int tea_size){
   drop_teaball_down();
   open_teaball();
   }  
+  reset_choices();
   turn_buttons_leds_on();
 }
 
@@ -62,20 +63,15 @@ void prepare_previous_tea(int tea_index, int tea_size){
     drop_teaball_down();
     open_teaball();
   }
+  reset_choices();
   turn_buttons_leds_on();
 }
 
 
-void test_prepare_tea(int tea_index, int tea_size){
+void prepare_tea_test(){
   float infusingTime[4] = {320, time1*60, time2*60, time3*60};
-  int infusingTemp[4] = {0, temp1, temp2, temp3};
-  Serial.println(infusingTime[tea_index]);
-  Serial.println(infusingFactor[tea_size]);
-  Serial.println(infusingTemp[tea_index]);
-  Serial.println(waterVolume[tea_size]);
-  Serial.println(teaWeight[tea_size]);
-  log_info("Starting Tea preparation", 1, 0 , 10);  
-  turn_buttons_leds_off_preparation(tea_index);
+  log_info("Starting Tea preparation test", 1, 0 , 10);  
+  turn_buttons_leds_off_preparation(4);
   initialize_arm();
   initialize_wagon();
   initialize_crane(true);
@@ -115,10 +111,14 @@ void test_prepare_tea(int tea_index, int tea_size){
   if (powered==false){
     return;
   }
+  arm_smooth_down();
+  delay(4000);
+  arm_smooth_up();
   rotate_crane(1);
   if (powered==false){
     return;
   }
+  
   immerge_teaball();
   delay(4000);
   pull_teaball_up();
@@ -137,8 +137,12 @@ void test_prepare_tea(int tea_index, int tea_size){
     return;
   }
   open_teaball();
+  reset_choices();
   turn_buttons_leds_on();
-  
+}
+
+void reset_choices(){
+  TeaSize = 0;
 }
 
 void load_tea(int tea_index, int tea_size){
@@ -369,6 +373,7 @@ void getTeaChoice(){
   int tea2 = digitalRead(Tea2switchPin);
   int tea3 = digitalRead(Tea3switchPin);
   boolean reuse_tea = false;
+  boolean test_procedure = false;
   unsigned long starttime;
   unsigned long endtime;
   if (tea1==HIGH){
@@ -376,10 +381,30 @@ void getTeaChoice(){
       log_info("Please select a Tea size", 1, 0 , 10);  
       delay(2500);
     }
-    else{
-      Serial.println("Preparing Tea 1");
-      delay(250);
-      prepare_tea(1, TeaSize);
+//    else{
+//      Serial.println("Preparing Tea 1");
+//      delay(250);
+//      prepare_tea(1, TeaSize);
+//      }
+      else{
+        starttime = millis();
+        endtime = starttime;
+        while ((endtime - starttime) <=750){
+          tea3 = digitalRead(Tea3switchPin);
+          if (tea3==HIGH){
+            test_procedure = true;
+            break;
+          }
+          endtime = millis();
+        }
+        if(test_procedure==false){
+          Serial.println("Preparing Tea 1");
+          prepare_tea(1, TeaSize);
+        }
+        else{
+          Serial.println("Starting test procedure");
+          prepare_tea_test();
+        }
       }
     }
   else if (tea2==HIGH){
