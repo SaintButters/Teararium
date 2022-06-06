@@ -173,7 +173,7 @@ unsigned long cloopTime;
 //Crane inputs
 float up_to_down_time = 3200;
 //power input
-int powerPin = 18;
+const byte powerPin = 18;
 boolean powerButtonState = LOW; 
 boolean powered = false; 
 //tea_selection
@@ -182,6 +182,18 @@ int teaChoice = 0;
 boolean power = false;
 boolean teararium_initialized = false;
 boolean turn_off = false;
+//default preperation settings
+int temp1 = 85;
+int temp2 = 85;
+int temp3 = 85;
+int time1 = 5;
+int time2 = 5;
+int time3 = 5;
+float infusingFactor[4] = {0, 1, 1, 1.5};
+float waterVolume[4] = {0, 120, 225, 500};
+float teaWeight[4] = {0, 1.25, 1.5, 2.25};
+int infusingTemp[4] = {90,temp1,temp2,temp3};
+float infusingTime[4] = {320, time1*60, time2*60, time3*60};
 
 void setup() {
   pinMode(powerPin, OUTPUT);
@@ -277,7 +289,9 @@ void setup() {
   //Load settings
   load_all_settings();
   //INIT
-//  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, FALLING);
+//  delay(500);
+//  pinMode(powerPin, INPUT_PULLUP);
+//  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, CHANGE);
   init_close_teaball();
   Serial.println("Arduino ready !!!");
 //  run_test();
@@ -315,13 +329,14 @@ void test_interrupt(){
 }
 
 
-void is_powered(){
+boolean is_powered(){
   powerButtonState = digitalRead(powerPin);
   if (powerButtonState == HIGH){
     if(powered==false){
       Serial.println("Power up");
       powered = true;
       pwrUp();
+      return true;
     }
   }
   else{
@@ -329,6 +344,7 @@ void is_powered(){
       Serial.println("Power down");
       pwrDwn();
       powered = false;
+      return false;
     }
   }
 }
@@ -359,7 +375,7 @@ void pwrDwn(){
   stop_pump();
   turn_thermoblock_off();
   close_teaball();
-  pull_teaball_up();
+  pull_teaball_up(true);
 //  playWithVolume(0X2505);//play the 9th (09) song with volume 20(0x14) class
   delay(500);
   turn_buttons_leds_off();

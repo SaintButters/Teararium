@@ -7,7 +7,7 @@ void initialize_wagon(){
   wagonSwitchPinValue = digitalRead(wagonSwitchPin);
   wagonStepper.enableOutputs();
    while (wagonSwitchPinValue != HIGH){
-      if (powered==false){
+      if (is_powered()==false){
         return;
       }
       wagonSwitchPinValue = digitalRead(wagonSwitchPin);
@@ -16,7 +16,7 @@ void initialize_wagon(){
   }
    wagonSwitchPressed();
    WagonHomePosition = wagonStepper.currentPosition();
-   Serial.println(WagonHomePosition);
+//   Serial.println(WagonHomePosition);
    Serial.println("Wagon initialized");
 }
 
@@ -45,7 +45,7 @@ void displace_wagon(int tea_index){
   wagonStepper.moveTo(WagonDestination);
   Serial.println(WagonHomePosition);
   while (wagonStepper.currentPosition() != WagonDestination) {   
-    if (powered==false){
+    if (is_powered()==false){
         wagonStepper.disableOutputs();
         return;
       }

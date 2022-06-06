@@ -1,12 +1,12 @@
 void initialize_crane(boolean pull_up){
    Serial.println("Intializing crane");
    close_teaball();
-   pull_teaball_up();
+   pull_teaball_up(false);
    Serial.println("Rotating crane to home");
    craneSwitchPinValue = digitalRead(craneSwitchPin);
    craneStepper.enableOutputs();
    while (craneSwitchPinValue != HIGH){
-    if (powered==false){
+    if (is_powered()==false){
         return;
       }
      craneSwitchPinValue = digitalRead(craneSwitchPin);
@@ -67,15 +67,17 @@ void close_teaball(){
      
  }
 
-void pull_teaball_up(){
+void pull_teaball_up(boolean turning_off){
   Serial.println("Pulling teaball up");
   TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
   CraneMotor->setSpeed(200);
   while (TeaBallUpSwitchValue !=HIGH){
-    if (powered==false){
-        CraneMotor->setSpeed(0);
-        return;
-      }
+    if (turning_off==false){
+      if (is_powered()==false){
+          CraneMotor->setSpeed(0);
+          return;
+        }
+    }
     TeaBallUpSwitchValue = digitalRead(TeaBallUpSwitchPin);
     CraneMotor->run(BACKWARD);
   }
@@ -87,7 +89,7 @@ void drop_teaball_down(){
   TeaBallDownSwitchValue = digitalRead(TeaBallDownSwitchPin);
   CraneMotor->setSpeed(200);
   while (TeaBallDownSwitchValue !=HIGH){
-    if (powered==false){
+    if (is_powered()==false){
         CraneMotor->setSpeed(0);
         return;
       }
@@ -122,6 +124,10 @@ CraneDestination = CraneHomePosition + 35;
     
   }
   else if (step_index==1){
+    CraneDestination = CraneHomePosition + 235;
+
+  }
+   else if (step_index==9){
     CraneDestination = CraneHomePosition + 275;
 
   }
@@ -130,7 +136,7 @@ CraneDestination = CraneHomePosition + 35;
   }
   craneStepper.enableOutputs();
     while (craneStepper.currentPosition() != CraneDestination) {
-        if (powered==false){
+        if (is_powered()==false){
           craneStepper.disableOutputs();
           return;
       }

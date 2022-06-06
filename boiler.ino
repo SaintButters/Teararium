@@ -1,6 +1,6 @@
  int ThermoblockRelay1Value;
  int ThermoblockRelay2Value;
- int infusingTemp[4] = {80,temp1,temp2,temp3};
+ 
  
  void monitor_thermoblock(boolean display_temp){
     if (display_temp == true){
@@ -21,7 +21,7 @@
     delay(250);
     while (computed_temperature() < infusingTemp[tea_index]){
       delay(250);
-      if (powered==false){
+      if (is_powered()==false){
         turn_thermoblock_off();
         monitor_thermoblock(true);
         return;

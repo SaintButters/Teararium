@@ -42,7 +42,7 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
         turn_thermoblock_on();
       }
       while (volume_poured < waterVolume[tea_size]) {
-        if (powered==false){
+        if (is_powered()==false){
           turn_thermoblock_off();
           return;
         }

@@ -1,24 +1,40 @@
-float infusingTime[4] = {320, time1*60, time2*60, time3*60};
-float infusingFactor[4] = {0, 1, 1, 1.5};
-float waterVolume[4] = {0, 120, 200, 500};
-float teaWeight[4] = {0, 1.5, 1.75, 2.5};
 boolean enough_tea = false;
 boolean enough_water = false;
 
 void prepare_tea(int tea_index, int tea_size){
-  float infusingTime[4] = {320, time1*60, time2*60, time3*60};
-  int infusingTemp[4] = {0, temp1, temp2, temp3};
-  Serial.println(infusingTime[tea_index]);
+  Serial.print("infusing factor = ");
   Serial.println(infusingFactor[tea_size]);
+  Serial.print("raw infusing time = ");
+  Serial.println(infusingTime[tea_index]);
+  Serial.print("adjusted infusing time = ");
+  Serial.println(infusingTime[tea_index]* infusingFactor[tea_size]);
+  Serial.print("infusing temp = ");
   Serial.println(infusingTemp[tea_index]);
+  Serial.print("Water Volume = ");
   Serial.println(waterVolume[tea_size]);
+  Serial.print("tea weight = ");
   Serial.println(teaWeight[tea_size]);
-  log_info("Starting Tea preparation", 1, 0 , 10);  
+  log_info("Starting Tea preparation", 1, 0 , 10); 
   turn_buttons_leds_off_preparation(tea_index);
+  if (is_powered()==false){
+    return;
+  }
   initialize_arm();
+  if (is_powered()==false){
+    return;
+  }
   initialize_wagon();
+  if (is_powered()==false){
+    return;
+  }
   initialize_crane(true);
+  if (is_powered()==false){
+    return;
+  }
   load_tea(tea_index, tea_size);
+  if (is_powered()==false){
+    return;
+  }
   if (enough_tea == false) {
     initialize_crane(false);
     Serial.println("Tea Box empty. Preparation ended");
@@ -30,11 +46,23 @@ void prepare_tea(int tea_index, int tea_size){
       initialize_crane(false);
     }
     else {
-      pull_teaball_up();
+      pull_teaball_up(false);
+      if (is_powered()==false){
+        return;
+     }
       infuse_tea(tea_index, tea_size, false);
     }
+  if (is_powered()==false){
+    return;
+  }
   drop_teaball_down();
+  if (is_powered()==false){
+    return;
+  }
   open_teaball();
+  if (is_powered()==false){
+    return;
+  }
   }  
   reset_choices();
   turn_buttons_leds_on();
@@ -52,15 +80,33 @@ void prepare_previous_tea(int tea_index, int tea_size){
   initialize_arm();
   initialize_wagon();
   initialize_crane(true);
+  if (is_powered()==false){
+    return;
+  }
   fill_cup(0, tea_size);
+  if (is_powered()==false){
+    return;
+  }
   if (enough_water == false) {
     Serial.println("Water tank empty. Preparation ended");
     initialize_crane(false);
   }
   else{
-    pull_teaball_up();
+    if (is_powered()==false){
+    return;
+    }
+    pull_teaball_up(false);
+    if (is_powered()==false){
+    return;
+    }
     infuse_tea(0, tea_size, true);
+    if (is_powered()==false){
+    return;
+    }
     drop_teaball_down();
+    if (is_powered()==false){
+    return;
+    }
     open_teaball();
   }
   reset_choices();
@@ -69,71 +115,70 @@ void prepare_previous_tea(int tea_index, int tea_size){
 
 
 void prepare_tea_test(){
-  float infusingTime[4] = {320, time1*60, time2*60, time3*60};
   log_info("Starting Tea preparation test", 1, 0 , 10);  
   turn_buttons_leds_off_preparation(4);
   initialize_arm();
   initialize_wagon();
   initialize_crane(true);
   rotate_crane(2);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   drop_teaball_down();
-  if (powered==false){
+  if (is_powered()==false){
   return;
   }
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   open_teaball();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   delay(500); 
   displace_wagon(4);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   activate_shovel();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   displace_wagon(0);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   close_teaball();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
-  pull_teaball_up();
-  if (powered==false){
+  pull_teaball_up(false);
+  if (is_powered()==false){
     return;
   }
   arm_smooth_down();
   delay(4000);
   arm_smooth_up();
-  rotate_crane(1);
-  if (powered==false){
+  rotate_crane(9);
+  if (is_powered()==false){
     return;
   }
   
   immerge_teaball();
   delay(4000);
-  pull_teaball_up();
-  if (powered==false){
+  pull_teaball_up(false);
+  if (is_powered()==false){
     return;
   }
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   rotate_crane(0);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   drop_teaball_down();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   open_teaball();
@@ -147,85 +192,86 @@ void reset_choices(){
 
 void load_tea(int tea_index, int tea_size){
   displace_wagon(tea_index);
-//  if (powered==false){
+//  if (is_powered()==false){
 //    return;
 //  }
   unload_tea(tea_index, tea_size);
-//  if (powered==false){
+//  if (is_powered()==false){
 //    return;
 //  }
   displace_wagon(1);
 //  if (enough_tea == false) {
 //    return;
 //  }
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   rotate_crane(2);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   drop_teaball_down();
-  if (powered==false){
+  if (is_powered()==false){
   return;
   }
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   open_teaball();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   delay(500); 
   displace_wagon(4);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   activate_shovel();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   displace_wagon(0);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   close_teaball();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
-  pull_teaball_up();
-  if (powered==false){
+  pull_teaball_up(false);
+  if (is_powered()==false){
     return;
   }
 }
 
 void fill_cup(int tea_index, int tea_size){
   arm_smooth_down();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   pour_water(tea_index, tea_size, true, true);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   delay(1000);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   arm_smooth_up();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   delay(1000);
 }
 
 void infuse_tea(int tea_index, int tea_size, boolean reuse){
+  delay(500);
   rotate_crane(1);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   immerge_teaball();
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   if (reuse == true){
@@ -234,15 +280,15 @@ void infuse_tea(int tea_index, int tea_size, boolean reuse){
   else {
     infusing_timer(infusingTime[tea_index]*infusingFactor[tea_size]);
   }
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
-  pull_teaball_up();
-  if (powered==false){
+  pull_teaball_up(false);
+  if (is_powered()==false){
     return;
   }
   delay(10000);
-  if (powered==false){
+  if (is_powered()==false){
     return;
   }
   rotate_crane(0);
@@ -252,10 +298,6 @@ void infuse_tea(int tea_index, int tea_size, boolean reuse){
 void unload_tea(int tea_index, int tea_size){
 
   float desired_tea_weight = teaWeight[tea_size];
-  Serial.print("Tea size = ");
-  Serial.println(tea_size);
-  Serial.print("Tea weight = ");
-  Serial.println(desired_tea_weight);
   float timer_index=0;
   float tea_weight= 0;
   float initial_mesure = 0;
@@ -278,7 +320,7 @@ void unload_tea(int tea_index, int tea_size){
     Serial.println(unloadingTime);
     CurrentTime = millis();
     unloadingTime = CurrentTime - StartTime;
-    if (powered==false){
+    if (is_powered()==false){
         stop_motor(tea_index);
         return;
       }
@@ -314,10 +356,13 @@ void unload_tea(int tea_index, int tea_size){
   }
 
 void infusing_timer(int seconds){
+  Serial.print("Starting timer for");
+  Serial.print(seconds);
+  Serial.println("seconds");
   int timer = seconds;
   int wiggle_timer = 0;
   while (timer != -1){
-      if (powered==false){
+      if (is_powered()==false){
         return;
       }
       display_timer(timer);
