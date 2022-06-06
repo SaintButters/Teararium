@@ -32,7 +32,7 @@ String teaItem3 = "Back";
 String soundItem1 = "Theme";
 String soundItem2 = "Volume";
 String soundItem3 = "Back";
-String lightingItem1 = "Ambiance";
+String lightingItem1 = "Leds";
 String lightingItem2 = "Display";
 String lightingItem3 = "Back";
 
@@ -43,13 +43,13 @@ String theme[4] = { "Random", "LOTR", "Witcher", "Jules sucks   LoL" };
 int themeCount = 4;
 int selectedTheme = 0;
 String onOff[2] = { "On", "Off"};
-int selectedOnOff = 0;
+int backLightSelectedOnOff = 0;
+int ledSelectedOnOff = 0;
 
 boolean sound = true;
 boolean backlight = true;
 int contrast=60;
 int volume = 50;
-int ambiance = 50;
 boolean up = false;
 boolean down = false;
 boolean middle = false;
@@ -77,11 +77,19 @@ void setupMenu(){
   
 void displayMenu() {
   drawMenu();
-  if (selectedOnOff == 0) {
+  if (backLightSelectedOnOff == 0) {
     turnBacklightOn();
   }
   else{
     turnBacklightOff();
+  }
+  if (ledSelectedOnOff == 0) {
+    if (powered == true){
+    enable_leds();
+    }
+  }
+  else{
+    disable_leds();
   }
   readRotaryEncoder();
 
@@ -191,13 +199,17 @@ void displayMenu() {
    if (up && page == 3  && menuItem ==5 ) {
     up = false;
     if (lightingItem ==1){
-    ambiance--;
+    ledSelectedOnOff--;
+    if(ledSelectedOnOff == -1)
+    {
+      ledSelectedOnOff = 1;
+    }
   }
    else if (lightingItem ==2){
-    selectedOnOff--;
-    if(selectedOnOff == -1)
+    backLightSelectedOnOff--;
+    if(backLightSelectedOnOff == -1)
     {
-      selectedOnOff = 1;
+      backLightSelectedOnOff = 1;
     }
     }
   }
@@ -293,13 +305,17 @@ void displayMenu() {
   if (down && page == 3  && menuItem ==5 ) {
     down = false;
     if (lightingItem ==1){
-    ambiance++;
+    ledSelectedOnOff++;
+    if(ledSelectedOnOff == 2)
+    {
+      ledSelectedOnOff = 0;
+    }
     }
     else if (lightingItem ==2){
-    selectedOnOff++;
-    if(selectedOnOff == 2)
+    backLightSelectedOnOff++;
+    if(backLightSelectedOnOff == 2)
     {
-      selectedOnOff = 0;
+      backLightSelectedOnOff = 0;
     }
     }
   }
@@ -541,10 +557,10 @@ void displayMenu() {
     displayIntMenuPage(soundItem2, volume, "%");
     }
     if (menuItem == 5 && lightingItem == 1){
-    displayIntMenuPage(lightingItem1, ambiance, "%");
+    displayStringMenuPage(lightingItem1, onOff[ledSelectedOnOff]);
     }
     if (menuItem == 5 && lightingItem == 2){
-    displayStringMenuPage(lightingItem2, onOff[selectedOnOff]);
+    displayStringMenuPage(lightingItem2, onOff[backLightSelectedOnOff]);
     }
     }
 
@@ -569,6 +585,18 @@ void displayMenu() {
     digitalWrite(7,LOW);
   }
 
+   void enable_leds()
+  {
+    leds_enabled = true;
+    digitalWrite(ledPin, HIGH);
+  }
+
+  void disable_leds()
+  {
+    leds_enabled = false;
+     digitalWrite(ledPin, LOW);
+  }
+  
   void timerIsr() {
   encoder->service();
 }

@@ -53,7 +53,9 @@ void turn_buttons_leds_off_preparation(int tea_index){
 }    
 
 void turn_lights_on(){
+  if (leds_enabled == true){
   digitalWrite(ledPin, HIGH);
+  }
 }
 
 void turn_lights_off(){

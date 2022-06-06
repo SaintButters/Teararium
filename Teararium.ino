@@ -40,6 +40,7 @@ int switchPinled5 = 22;              //
 int switchPinled6 = 26;   
 int ledPin=17;
 int firefliesPin=54;
+boolean leds_enabled = true;
 ///SPEAKER PIN
 int speakerPin = 6;
 ///INIT DC MOTOR////

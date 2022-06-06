@@ -10,7 +10,7 @@ int tea3_infusion_time_line = 16;
 int current_tea_line = 18;
 int reuse_count_line = 20;
 int seconds_since_last_tea_line = 22;
-int ambiance_line = 27;
+int led_line = 27;
 int lullabies_line = 29;
 int backlight_line = 31;
 int theme_line = 36;
@@ -115,10 +115,10 @@ int get_setting(int menuItem, int  teaItem, int soundItem, int lightingItem) {
     setting = volume;
   }
   else if (menuItem==5 and lightingItem==1){
-    setting = ambiance;
+    setting = ledSelectedOnOff;
   }
   else if (menuItem==5 and lightingItem==2){
-    setting = selectedOnOff;
+    setting = backLightSelectedOnOff;
   }
   return setting.toInt();
 }
@@ -154,7 +154,7 @@ int get_setting_line(int menuItem, int  teaItem, int soundItem, int lightingItem
     line = volume_line;
   }
   else if (menuItem==5 and lightingItem==1){
-    line = ambiance_line;
+    line = led_line;
   }
   else if (menuItem==5 and lightingItem==2){
     line = backlight_line;
