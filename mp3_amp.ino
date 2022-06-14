@@ -98,7 +98,6 @@ void sendBytes(uint8_t nbytes)
   {
     myMP3.write(Send_buf[i]) ;
   }
-//  turn_speaker_off();
 }
 
 void turn_speaker_on()

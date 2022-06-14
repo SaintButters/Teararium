@@ -132,7 +132,7 @@ CraneDestination = CraneHomePosition + 35;
 
   }
   else{
-      CraneDestination = CraneHomePosition  + 415;
+      CraneDestination = CraneHomePosition  + 420;
   }
   craneStepper.enableOutputs();
     while (craneStepper.currentPosition() != CraneDestination) {

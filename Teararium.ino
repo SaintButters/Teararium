@@ -191,10 +191,11 @@ int time1 = 5;
 int time2 = 5;
 int time3 = 5;
 float infusingFactor[4] = {0, 1, 1, 1.5};
-float waterVolume[4] = {0, 120, 225, 500};
+float waterVolume[4] = {0, 135, 270, 500};
 float teaWeight[4] = {0, 1.25, 1.5, 2.25};
 int infusingTemp[4] = {90,temp1,temp2,temp3};
-float infusingTime[4] = {320, time1*60, time2*60, time3*60};
+float infusingTime[4] = {240, time1*60, time2*60, time3*60};
+int previous_tea_index=0;
 
 void setup() {
   pinMode(powerPin, OUTPUT);

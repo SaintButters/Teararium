@@ -66,6 +66,7 @@ void prepare_tea(int tea_index, int tea_size){
   }  
   reset_choices();
   turn_buttons_leds_on();
+  previous_tea_index = tea_index;
 }
 
 void prepare_previous_tea(int tea_index, int tea_size){
@@ -83,7 +84,7 @@ void prepare_previous_tea(int tea_index, int tea_size){
   if (is_powered()==false){
     return;
   }
-  fill_cup(0, tea_size);
+  fill_cup(tea_index, tea_size);
   if (is_powered()==false){
     return;
   }
@@ -99,7 +100,7 @@ void prepare_previous_tea(int tea_index, int tea_size){
     if (is_powered()==false){
     return;
     }
-    infuse_tea(0, tea_size, true);
+    infuse_tea(tea_index, tea_size, true);
     if (is_powered()==false){
     return;
     }
@@ -111,6 +112,7 @@ void prepare_previous_tea(int tea_index, int tea_size){
   }
   reset_choices();
   turn_buttons_leds_on();
+  previous_tea_index = tea_index;
 }
 
 
@@ -192,17 +194,8 @@ void reset_choices(){
 
 void load_tea(int tea_index, int tea_size){
   displace_wagon(tea_index);
-//  if (is_powered()==false){
-//    return;
-//  }
   unload_tea(tea_index, tea_size);
-//  if (is_powered()==false){
-//    return;
-//  }
   displace_wagon(1);
-//  if (enough_tea == false) {
-//    return;
-//  }
   if (is_powered()==false){
     return;
   }
@@ -266,7 +259,12 @@ void fill_cup(int tea_index, int tea_size){
 
 void infuse_tea(int tea_index, int tea_size, boolean reuse){
   delay(500);
-  rotate_crane(1);
+  if (reuse == true){
+    rotate_crane(9);
+  }
+  else {
+    rotate_crane(1);
+  }
   if (is_powered()==false){
     return;
   }
@@ -426,11 +424,6 @@ void getTeaChoice(){
       log_info("Please select a Tea size", 1, 0 , 10);  
       delay(2500);
     }
-//    else{
-//      Serial.println("Preparing Tea 1");
-//      delay(250);
-//      prepare_tea(1, TeaSize);
-//      }
       else{
         starttime = millis();
         endtime = starttime;
@@ -474,7 +467,7 @@ void getTeaChoice(){
         }
         else{
           Serial.println("Re-using last teaball");
-          prepare_previous_tea(0, TeaSize);
+          prepare_previous_tea(previous_tea_index, TeaSize);
         }
     }
   }

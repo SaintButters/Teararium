@@ -588,13 +588,15 @@ void displayMenu() {
    void enable_leds()
   {
     leds_enabled = true;
-    digitalWrite(ledPin, HIGH);
+    turn_lights_on();
+    turn_fireflies_on();
   }
 
   void disable_leds()
   {
     leds_enabled = false;
-     digitalWrite(ledPin, LOW);
+    turn_lights_off();
+    turn_fireflies_off();
   }
   
   void timerIsr() {

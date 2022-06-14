@@ -59,7 +59,6 @@ for (int i = 0; i <= line_cout; i++) {
   }
   myFile.close();
   }
-
 // close the file:
 
 else {

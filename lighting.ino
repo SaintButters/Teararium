@@ -63,7 +63,9 @@ void turn_lights_off(){
 }
 
 void turn_fireflies_on(){
+  if (leds_enabled == true){
   analogWrite(firefliesPin, 140);
+  }
 }
 
 void turn_fireflies_off(){
