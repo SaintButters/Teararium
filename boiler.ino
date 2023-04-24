@@ -8,9 +8,11 @@
       Serial.print("Thermoblock temp :");
       Serial.println(String(computed_temperature()));
     }
-    if(computed_temperature()>130){
+    if(computed_temperature()>200){
       Serial.println("Maximum temperature reached ! Abord !");
       turn_thermoblock_off();
+      log_info("Maximum temperature reached ! Preparation aborted !", 1, 0 , 10);
+      delay(200);
     }
   }
   

@@ -120,7 +120,7 @@ void immerge_teaball(){
   Serial.println(step_index);
   if (step_index==0){
 //    CraneDestination = CraneHomePosition + 95;
-CraneDestination = CraneHomePosition + 35;
+CraneDestination = CraneHomePosition + 33;
     
   }
   else if (step_index==1){
@@ -128,7 +128,7 @@ CraneDestination = CraneHomePosition + 35;
 
   }
    else if (step_index==9){
-    CraneDestination = CraneHomePosition + 275;
+    CraneDestination = CraneHomePosition + 280;
 
   }
   else{

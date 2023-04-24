@@ -16,23 +16,6 @@ void displayTemperature(String Temp)
     display.display();
 }
 
-void displayWeight(String weight)
-{
-    display.setTextSize(1);
-    display.clearDisplay();
-    display.setTextColor(BLACK, WHITE);
-    display.setCursor(5, 0);
-    display.print("Tea Weight");
-    display.drawFastHLine(0,10,83,BLACK);
-    display.setCursor(5, 15);
-    display.setTextSize(1);
-    display.setCursor(5, 25);
-    display.print(weight);
-    display.print(" grams");
-    display.setTextSize(2);
-    display.display();
-}
-
 void displayPouring(String Temp, String flowrate, String volume_poured)
 {
     display.setTextSize(1);
@@ -62,6 +45,33 @@ void displayPouring(String Temp, String flowrate, String volume_poured)
     display.display();
 }
 
+void display_volume_choice(){
+    readRotaryEncoder();
+    if (up){
+      if (waterVolume[TeaSize]<1000){
+        waterVolume[TeaSize] = waterVolume[TeaSize] + 5;
+        up = false;
+      }
+    }
+    else if (down){
+      if (waterVolume[TeaSize]>0){
+        waterVolume[TeaSize] = waterVolume[TeaSize] - 5;
+        down = false;
+      }
+    }
+    int vol = waterVolume[TeaSize];
+    display.setTextSize(1);
+    display.clearDisplay();
+    display.setTextColor(BLACK, WHITE);
+    display.setCursor(17, 0);
+    display.print("Volume [mL]");
+    display.drawFastHLine(0,10,83,BLACK);
+    display.setCursor(10, 20);
+    display.setTextSize(3);
+    display.print(vol);
+    display.display();
+}
+
 void display_timer(int seconds){
     display.setTextSize(1);
     display.clearDisplay();
@@ -80,8 +90,8 @@ void display_weight(float weight){
     display.setTextSize(1);
     display.clearDisplay();
     display.setTextColor(BLACK, WHITE);
-    display.setCursor(10, 0);
-    display.print("Weight:");
+    display.setCursor(15, 0);
+    display.print("TEA MASS");
     display.drawFastHLine(0,10,83,BLACK);
     display.setCursor(5, 20);
     display.setTextSize(1);

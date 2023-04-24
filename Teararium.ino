@@ -184,17 +184,17 @@ boolean power = false;
 boolean teararium_initialized = false;
 boolean turn_off = false;
 //default preperation settings
-int temp1 = 85;
-int temp2 = 85;
-int temp3 = 85;
-int time1 = 5;
-int time2 = 5;
-int time3 = 5;
+int temp1 = 80;
+int temp2 = 80;
+int temp3 = 80;
+int time1 = 3;
+int time2 = 3;
+int time3 = 3;
 float infusingFactor[4] = {0, 1, 1, 1.5};
 float waterVolume[4] = {0, 135, 270, 500};
-float teaWeight[4] = {0, 1.25, 1.5, 2.25};
-int infusingTemp[4] = {90,temp1,temp2,temp3};
-float infusingTime[4] = {240, time1*60, time2*60, time3*60};
+float teaWeight[4] = {0, 0.85, 1.5, 2.25};
+int infusingTemp[4] = {80,temp1,temp2,temp3};
+float infusingTime[4] = {180, time1*60, time2*60, time3*60};
 int previous_tea_index=0;
 
 void setup() {
@@ -288,30 +288,25 @@ void setup() {
   //SETUP INTERRUPT POWER UP
   pinMode(18, INPUT);
   digitalWrite(18, LOW);
-  //Load settings
-  load_all_settings();
-  //INIT
-//  delay(500);
-//  pinMode(powerPin, INPUT_PULLUP);
-//  attachInterrupt(digitalPinToInterrupt(powerPin), test_interrupt, CHANGE);
+//  load_all_settings();
   init_close_teaball();
-  Serial.println("Arduino ready !!!");
-//  run_test();
+  Serial.println("Arduino ready !!!");  
 }
 
 void loop() {
   is_powered();
-  getTeaSize();
-  getTeaChoice();
-  displayMenu();
-//  monitor_thermoblock(false);
+  if(powered==true){
+    getTeaSize();
+    getTeaChoice();
+  }
+  if (TeaSize==0){
+    displayMenu();
+  }
+  else {
+    display_volume_choice();
+  }
+//  monitor_thermoblock(true);
 
-
-//  if (turn_off==true){
-//    pwrDwn();
-//  }
-//  turn_off = false;
-  
 }
 
 void test_interrupt(){
@@ -362,6 +357,7 @@ void pwrUp(){
   delay(1200);
 //  turn_speaker_off();
   initialize_teararium();
+//  load_all_settings();
   wagonStepper.disableOutputs();
   craneStepper.disableOutputs();
   Serial.println("POWERED ON");  

@@ -158,7 +158,7 @@ void displayMenu() {
     
     up = false;
     if (teaItem ==1){
-    temp1--;
+    temp1 = temp1 - 5;
   }
     else if (teaItem ==2){
     time1--;
@@ -167,7 +167,7 @@ void displayMenu() {
   if (up && page == 3  && menuItem ==2 ) {
     up = false;
     if (teaItem ==1){
-    temp2--;
+    temp2 = temp2 - 5;
   }
     else if (teaItem ==2){
     time2--;
@@ -176,7 +176,7 @@ void displayMenu() {
   if (up && page == 3  && menuItem ==3 ) {
     up = false;
     if (teaItem ==1){
-    temp3--;
+    temp3 = temp3 - 5;
   }
     else if (teaItem ==2){
     time3--;
@@ -265,7 +265,7 @@ void displayMenu() {
   if (down && page == 3  && menuItem ==1 ) {
     down = false;
     if (teaItem ==1){
-    temp1++;
+    temp1 = temp1 + 5;
   }
     else if (teaItem ==2){
     time1++;
@@ -274,7 +274,7 @@ void displayMenu() {
       if (down && page == 3  && menuItem ==2 ) {
         down = false;
     if (teaItem ==1){
-    temp2++;
+    temp2 = temp2 + 5;
   }
     else if (teaItem ==2){
     time2++;
@@ -283,7 +283,7 @@ void displayMenu() {
   if (down && page == 3  && menuItem ==3 ) {
     down = false;
     if (teaItem ==1){
-    temp3++;
+    temp3 = temp3 + 5;
   }
     else if (teaItem ==2){
     time3++;
@@ -370,7 +370,7 @@ void displayMenu() {
     display.clearDisplay();
     display.setTextColor(BLACK, WHITE);
     display.setCursor(15, 0);
-    display.print("TEARARIUM");
+    display.print("SETTINGS");
     display.drawFastHLine(0,10,83,BLACK);
 
     if(menuItem==1 && frame ==1)

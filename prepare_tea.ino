@@ -70,7 +70,6 @@ void prepare_tea(int tea_index, int tea_size){
 }
 
 void prepare_previous_tea(int tea_index, int tea_size){
-
   Serial.println(infusingTime[tea_index]);
   Serial.println(infusingFactor[tea_size]);
   Serial.println(infusingTemp[tea_index]);
@@ -263,7 +262,8 @@ void infuse_tea(int tea_index, int tea_size, boolean reuse){
     rotate_crane(9);
   }
   else {
-    rotate_crane(1);
+//    rotate_crane(1);
+    rotate_crane(9);
   }
   if (is_powered()==false){
     return;
@@ -273,7 +273,7 @@ void infuse_tea(int tea_index, int tea_size, boolean reuse){
     return;
   }
   if (reuse == true){
-    infusing_timer(infusingTime[tea_index]*infusingFactor[tea_size]*1.5);
+    infusing_timer(infusingTime[tea_index]*infusingFactor[tea_size]*1.25);
   }
   else {
     infusing_timer(infusingTime[tea_index]*infusingFactor[tea_size]);

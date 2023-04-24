@@ -35,11 +35,11 @@ void load_all_settings(){
   time1 = read_setting(tea1_infusion_time_line);
   time2 = read_setting(tea2_infusion_time_line);
   time3 = read_setting(tea3_infusion_time_line);
-  infusingTemp[0] = 90;
+  infusingTemp[0] = 80;
   infusingTemp[1] = temp1;
   infusingTemp[2] = temp2;
   infusingTemp[3] = temp3;
-  infusingTime[0] = 320;
+  infusingTime[0] = 180;
   infusingTime[1] = time1*60;
   infusingTime[2] = time2*60;
   infusingTime[3] = time3*60;

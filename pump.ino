@@ -20,6 +20,7 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
   Serial.println("Start pouring process");
   pouring_time = 0;
   volume_poured = 0;
+  int heater_timer = 0;
   enough_water = false;
   int abonormal_flowrate_count = 0;
   Serial.print("temp = ");
@@ -28,7 +29,6 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
   Serial.print("Angle servo : ");
   Serial.println(arm_servo.read());
   if (130<arm_servo.read()<140){
-    if (PumpMotorState == 0) {
       if (preheating == true){
         preHeat_thermoblock(tea_index);
       }
@@ -44,6 +44,12 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
       while (volume_poured < waterVolume[tea_size]) {
         if (is_powered()==false){
           turn_thermoblock_off();
+          stop_pump();
+          return;
+        }
+        if (computed_temperature()<5 or computed_temperature()<150){
+          turn_thermoblock_off();
+          stop_pump();
           return;
         }
         monitor_thermoblock(false);
@@ -62,14 +68,29 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
         displayPouring(String(computed_temperature(),0),String(flowrate,0),String(volume_poured,0));
         if (flowrate < 5){
           abonormal_flowrate_count = abonormal_flowrate_count + 1;
+          Serial.print(abonormal_flowrate_count);
         }
         else{
           abonormal_flowrate_count = 0;
         }
-        if (abonormal_flowrate_count > 5){
+        if (abonormal_flowrate_count > 8){
           Serial.print("Water flow too low. Filling ended");
+          log_info("Water flow too low. Filling ended", 1, 0 , 10);
+          turn_thermoblock_off();
+          stop_pump();
+          delay(6000);
           break;
         }
+        if (heater_timer > 120){
+          Serial.print("Preheating stoppped : timer ended");
+          log_info("Preheating stoppped : timer ended", 1, 0 , 10);
+          turn_thermoblock_off();
+          stop_pump();
+          delay(6000);
+          break;
+        }
+        delay(250);
+        heater_timer = heater_timer+1;
       }
       delay(250);
       turn_thermoblock_off();
@@ -88,7 +109,7 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
        }
     }
   }
-}
+
 
 void purge_pipes(){
   run_pump(150);

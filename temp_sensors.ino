@@ -50,7 +50,8 @@ float computed_temperature() {
 //  Serial.print("Temperature "); 
 //  Serial.print(steinhart);
 //  Serial.println(" *C");
-  return steinhart;
+  return steinhart + 8; //adding a 8 degC offset
+  
 }
 
 
