@@ -21,7 +21,7 @@
     Serial.println("Pre heating thermoblock");
     turn_thermoblock_on();
     delay(250);
-    while (computed_temperature() < infusingTemp[tea_index]){
+    while (computed_temperature() < infusingTemp[tea_index] - 40){
       delay(250);
       if (is_powered()==false){
         turn_thermoblock_off();
