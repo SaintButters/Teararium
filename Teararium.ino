@@ -43,9 +43,11 @@ int firefliesPin=54;
 boolean leds_enabled = true;
 ///SPEAKER PIN
 int speakerPin = 6;
-///INIT DC MOTOR////
-#define Pin1 37  // Pump Motor A pins
-#define Pin2 39
+///INIT PUMP////
+int PumpPin1 = 42;
+int PumpPin2 = 44;
+int enablePumpPin = 1;
+int pump_power_pct = 200;
 ///INIT STEPPER///
 #include <TMCStepper.h>
 
@@ -154,11 +156,8 @@ int thermoCLK = 22;
 int desired_temp = 20;
 MAX6675 thermocouple1(thermoCLK, thermoCS, thermoDO);
 //thermocouple1.setOffset(-10);
-//INIT RELAY
-int ThermoblockRelayPin1 = 42;
-int ThermoblockRelayPin2 = 46;
-int solenoidRelayPin = 44;
-int solenoid2RelayPin = 40;
+//INIT SOLID STATE RELAY 
+int Thermoblock_pin = 12;
 //INIT FLOW SENSOR
 volatile int flow_frequency; // Measures flow sensor pulses
 unsigned int L_per_hour; // Computed litres/hour
@@ -207,6 +206,10 @@ void setup() {
   turn_thermoblock_off();
   ///Led Setup///
   turn_buttons_leds_off();
+  //SETUP PUMP
+  pinMode(PumpPin1, OUTPUT);
+  pinMode(PumpPin2, OUTPUT);
+  pinMode(enablePumpPin, OUTPUT);
   //motors setup
   AFMS1.begin();
   stop_motor(1);
@@ -232,15 +235,8 @@ void setup() {
   Serial.println("motor Feather 1 initialized");
   ///Servos setup///
   //SETUP RELAY
-  pinMode(solenoidRelayPin, OUTPUT);
-  digitalWrite(solenoidRelayPin, HIGH);
-  pinMode(solenoid2RelayPin, OUTPUT);
-  digitalWrite(solenoid2RelayPin, HIGH);
-  pinMode(ThermoblockRelayPin1, OUTPUT);
-  digitalWrite(ThermoblockRelayPin1, HIGH);
-  pinMode(ThermoblockRelayPin2, OUTPUT);
-  digitalWrite(ThermoblockRelayPin2, HIGH);
-  //SETUP SCALE
+  pinMode(Thermoblock_pin, OUTPUT);
+  //SETUP SCALE 
   float calibrationValue; // calibration value
   calibrationValue = -1710; // tested value 
   LoadCell.begin();
@@ -266,11 +262,6 @@ void setup() {
   else if (LoadCell.getSPS() > 100) {
     Serial.println("!!Sampling rate is higher than specification, check MCU>HX711 wiring and pin designations");
   }
-  //SETUP PUMP DC MOTOR
-  pinMode(Pin1, OUTPUT);
-  pinMode(Pin2, OUTPUT);
-  digitalWrite(Pin1, LOW);
-  digitalWrite(Pin2, LOW);
   //SETUP FLOW SENSOR
   pinMode(flowsensor, INPUT);
   digitalWrite(flowsensor, HIGH); // Optional Internal Pull-Up
@@ -291,6 +282,9 @@ void setup() {
 //  load_all_settings();
   init_close_teaball();
   Serial.println("Arduino ready !!!");  
+  run_pump(150);
+  delay(5000);
+  stop_pump();
 }
 
 void loop() {

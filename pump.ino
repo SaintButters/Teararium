@@ -2,17 +2,18 @@
 
 int incomingByte = 0; // for incoming serial data
 
-void run_pump(int power) {    
+void run_pump(int pump_power_pct) {    
   Serial.println("Activating pump");     
-  analogWrite(Pin1, 0);
-  analogWrite(Pin2, power);
+  digitalWrite(PumpPin1, HIGH); 
+  digitalWrite(PumpPin2, LOW);
+  analogWrite(enablePumpPin, pump_power_pct); 
   PumpMotorState = 1;
 }
 
 void stop_pump() {       
   Serial.println("Stopping pump");      
-  digitalWrite(Pin1, LOW);
-  digitalWrite(Pin2, LOW);
+  digitalWrite(PumpPin1, LOW); 
+  digitalWrite(PumpPin2, LOW);
   PumpMotorState = 0;
 }
 
@@ -33,21 +34,28 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
         preHeat_thermoblock(tea_index);
       }
       delay(250);
-      close_vent_valve();
-      delay(250);
-      open_valve();
-      delay(250);
-      run_pump(220);
+      run_pump(pump_power_pct);
       if (heating == true){
         turn_thermoblock_on();
       }
+      Serial.print("Volume = ");
+      Serial.print(volume_poured); 
+      Serial.println(" mL");
+      Serial.print("Volume to pour = ");
+      Serial.print(waterVolume[tea_size]);
+      Serial.println(" mL");
       while (volume_poured < waterVolume[tea_size]) {
+        Serial.println("Starting pouring");
         if (is_powered()==false){
           turn_thermoblock_off();
           stop_pump();
           return;
         }
-        if (computed_temperature()<5 or computed_temperature()<150){
+        Serial.print("temp thblk= ");
+        Serial.print(String(computed_temperature()));
+        Serial.println(" degC");
+        if (computed_temperature()<5 or computed_temperature()>150){
+          Serial.print("Thermoblock temp out of allowed range");
           turn_thermoblock_off();
           stop_pump();
           return;
@@ -95,13 +103,10 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
       delay(250);
       turn_thermoblock_off();
       delay(250);
-      close_valve();
-      delay(250);
 //      stop_pump();
       if (volume_poured > 0.66 * waterVolume[tea_size]){
           enough_water = true;
           stop_pump();
-//          purge_pipes();
         }
        else{
          stop_pump();
@@ -110,34 +115,6 @@ void pour_water(int tea_index, int tea_size, bool heating, bool preheating) {
     }
   }
 
-
-void purge_pipes(){
-  run_pump(150);
-  delay(250);
-  open_vent_valve();
-  delay(1250);
-  close_vent_valve();
-  delay(500);
-  stop_pump();
-}
-
-void open_valve(){
-  Serial.println("Opening valve");
-  digitalWrite(solenoidRelayPin, LOW);
-}
-void close_valve(){
-  Serial.println("Closing valve");
-  digitalWrite(solenoidRelayPin, HIGH);
-}
-
-void open_vent_valve(){
-  Serial.println("Opening vent valve");
-  digitalWrite(solenoid2RelayPin, LOW);
-}
-void close_vent_valve(){
-  Serial.println("Closing vent valve");
-  digitalWrite(solenoid2RelayPin, HIGH);
-}
 
 float measure_flowrate () {
   currentTime = millis();

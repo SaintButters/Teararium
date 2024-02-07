@@ -16,25 +16,30 @@ void prepare_tea(int tea_index, int tea_size){
   Serial.println(teaWeight[tea_size]);
   log_info("Starting Tea preparation", 1, 0 , 10); 
   turn_buttons_leds_off_preparation(tea_index);
-  if (is_powered()==false){
-    return;
-  }
-  initialize_arm();
-  if (is_powered()==false){
-    return;
-  }
-  initialize_wagon();
-  if (is_powered()==false){
-    return;
-  }
-  initialize_crane(true);
-  if (is_powered()==false){
-    return;
-  }
-  load_tea(tea_index, tea_size);
-  if (is_powered()==false){
-    return;
-  }
+//  if (is_powered()==false){
+//    return;
+//  }
+//  initialize_arm();
+//  if (is_powered()==false){
+//    return;
+//  }
+//  initialize_wagon();
+//  if (is_powered()==false){
+//    return;
+//  }
+//  initialize_crane(true);
+//  if (is_powered()==false){
+//    return;
+//  }
+//  load_tea(tea_index, tea_size);
+//  if (is_powered()==false){
+//    return;
+//  }
+
+  ///LIGNE A DELETE !!!!!!!!!!!!!!!
+  enough_water = true;
+  enough_tea = true;
+  
   if (enough_tea == false) {
     initialize_crane(false);
     Serial.println("Tea Box empty. Preparation ended");
@@ -52,17 +57,17 @@ void prepare_tea(int tea_index, int tea_size){
      }
       infuse_tea(tea_index, tea_size, false);
     }
-  if (is_powered()==false){
-    return;
-  }
-  drop_teaball_down();
-  if (is_powered()==false){
-    return;
-  }
-  open_teaball();
-  if (is_powered()==false){
-    return;
-  }
+//  if (is_powered()==false){
+//    return;
+//  }
+//  drop_teaball_down();
+//  if (is_powered()==false){
+//    return;
+//  }
+//  open_teaball();
+//  if (is_powered()==false){
+//    return;
+//  }
   }  
   reset_choices();
   turn_buttons_leds_on();
@@ -241,7 +246,7 @@ void fill_cup(int tea_index, int tea_size){
   if (is_powered()==false){
     return;
   }
-  pour_water(tea_index, tea_size, true, true);
+  pour_water(tea_index, tea_size, false, false);
   if (is_powered()==false){
     return;
   }

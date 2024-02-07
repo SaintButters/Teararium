@@ -1,5 +1,4 @@
- int ThermoblockRelay1Value;
- int ThermoblockRelay2Value;
+ int ThermoblockRelayValue;
  
  
  void monitor_thermoblock(boolean display_temp){
@@ -37,27 +36,20 @@
  void turn_thermoblock_on(){
     
     Serial.println("Turning thermoblock on");
-    ThermoblockRelay1Value = digitalRead(ThermoblockRelayPin1);
-    ThermoblockRelay2Value = digitalRead(ThermoblockRelayPin2);
-    delay(500);
-    if (ThermoblockRelay1Value != LOW) {
-    Serial.println("closing thermoblock relay 1");
-    digitalWrite(ThermoblockRelayPin1, LOW);
+    ThermoblockRelayValue = digitalRead(Thermoblock_pin);
+    delay(250);
+    if (ThermoblockRelayValue != HIGH) {
+    Serial.println("closing thermoblock relay");
+    digitalWrite(Thermoblock_pin, HIGH);
     }
-    delay(500);
-    if (ThermoblockRelay2Value != LOW) {
-    Serial.println("closing thermoblock relay 2");
-    digitalWrite(ThermoblockRelayPin2, LOW);
-    }
+    delay(250);
   }
   
 
   void turn_thermoblock_off(){
     Serial.println("Turning thermoblock off");
-    delay(500);
-    Serial.println("opening relay 1");
-    digitalWrite(ThermoblockRelayPin1, HIGH);
-    delay(500);
-    Serial.println("opening relay 2");
-    digitalWrite(ThermoblockRelayPin2, HIGH);
+    delay(250);
+    Serial.println("opening relay");
+    digitalWrite(Thermoblock_pin, LOW);
+    delay(250);
   }
